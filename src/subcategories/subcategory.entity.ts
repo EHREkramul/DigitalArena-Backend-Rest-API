@@ -1,0 +1,30 @@
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
+import { Category } from '../categories/category.entity';
+import { Product } from 'src/products/product.entity';
+
+@Entity({ name: 'subcategories' })
+export class Subcategory {
+  @PrimaryGeneratedColumn('uuid') // Unique identifier using UUID.
+  id: string;
+
+  @Column({ type: 'varchar', length: 100, nullable: false }) // Subcategory name.
+  name: string;
+
+  @ManyToOne(() => Category, (category) => category.subcategories, {
+    nullable: false,
+  }) // Many subcategories belong to one category.
+  category: Category;
+
+  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }) // Automatically sets creation timestamp.
+  created_at: Date;
+
+  @OneToMany(() => Product, (product) => product.subcategory) // One-to-many relationship
+  products: Product[];
+}

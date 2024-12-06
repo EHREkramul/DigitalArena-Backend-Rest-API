@@ -1,9 +1,11 @@
+import { Order } from 'src/orders/order.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 
 export enum UserRole {
@@ -48,4 +50,8 @@ export class User {
 
   @Column({ type: 'boolean', default: false }) // Verification status.
   isVerified: boolean;
+
+  // Add the One-to-Many relationship
+  @OneToMany(() => Order, (order) => order.user)
+  orders: Order[];
 }

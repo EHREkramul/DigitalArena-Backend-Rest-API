@@ -15,9 +15,22 @@ import { DownloadsModule } from './downloads/downloads.module';
 import { CategoriesModule } from './categories/categories.module';
 import { SubcategoriesModule } from './subcategories/subcategories.module';
 import { CouponsModule } from './coupons/coupons.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from './users/user.entity';
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: 'localhost',
+      port: 5432,
+      username: 'postgres',
+      password: '3639',
+      database: 'digital_arena',
+      entities: [User], // Include the User entity
+      synchronize: true,
+    }),
     AuthModule,
     UsersModule,
     ProductsModule,

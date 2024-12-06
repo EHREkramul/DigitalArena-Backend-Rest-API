@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 
 export enum UserRole {
-  USER = 'USER',
+  USER = 'BUYER',
   ADMIN = 'ADMIN',
 }
 
@@ -37,10 +37,10 @@ export class User {
   @Column({ type: 'varchar', length: 255, nullable: true }) // Path to profile image.
   profileImage?: string;
 
-  @CreateDateColumn({ type: 'timestamp' }) // Timestamp when the user is created.
+  @CreateDateColumn({ type: 'timestamp' }) // Timestamp when the user is created. It's set automatically.
   createdAt: Date;
 
-  @UpdateDateColumn({ type: 'timestamp' }) // Timestamp when the user is updated.
+  @UpdateDateColumn({ type: 'timestamp' }) // Timestamp when the user is updated. It's set automatically.
   updatedAt: Date;
 
   @Column({ type: 'timestamp', nullable: true }) // Last login timestamp.

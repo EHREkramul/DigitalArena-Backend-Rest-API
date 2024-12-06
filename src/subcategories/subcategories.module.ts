@@ -4,6 +4,6 @@ import { SubcategoriesService } from './subcategories.service';
 
 @Module({
   controllers: [SubcategoriesController],
-  providers: [SubcategoriesService]
+  providers: [SubcategoriesService],
 })
 export class SubcategoriesModule {}

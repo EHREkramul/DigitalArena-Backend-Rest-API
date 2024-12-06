@@ -17,7 +17,22 @@ import { SubcategoriesModule } from './subcategories/subcategories.module';
 import { CouponsModule } from './coupons/coupons.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, ProductsModule, OrdersModule, CartModule, ReviewsModule, WishlistModule, NotificationsModule, SiteSettingsModule, LogsModule, DownloadsModule, CategoriesModule, SubcategoriesModule, CouponsModule],
+  imports: [
+    AuthModule,
+    UsersModule,
+    ProductsModule,
+    OrdersModule,
+    CartModule,
+    ReviewsModule,
+    WishlistModule,
+    NotificationsModule,
+    SiteSettingsModule,
+    LogsModule,
+    DownloadsModule,
+    CategoriesModule,
+    SubcategoriesModule,
+    CouponsModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

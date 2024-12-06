@@ -4,6 +4,6 @@ import { SiteSettingsService } from './site-settings.service';
 
 @Module({
   controllers: [SiteSettingsController],
-  providers: [SiteSettingsService]
+  providers: [SiteSettingsService],
 })
 export class SiteSettingsModule {}

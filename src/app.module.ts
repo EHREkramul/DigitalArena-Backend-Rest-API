@@ -10,9 +10,10 @@ import { ReviewsModule } from './reviews/reviews.module';
 import { WishlistModule } from './wishlist/wishlist.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { SiteSettingsModule } from './site-settings/site-settings.module';
+import { LogsModule } from './logs/logs.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, ProductsModule, OrdersModule, CartModule, ReviewsModule, WishlistModule, NotificationsModule, SiteSettingsModule],
+  imports: [AuthModule, UsersModule, ProductsModule, OrdersModule, CartModule, ReviewsModule, WishlistModule, NotificationsModule, SiteSettingsModule, LogsModule],
   controllers: [AppController],
   providers: [AppService],
 })

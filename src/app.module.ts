@@ -9,9 +9,10 @@ import { CartModule } from './cart/cart.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { WishlistModule } from './wishlist/wishlist.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { SiteSettingsModule } from './site-settings/site-settings.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, ProductsModule, OrdersModule, CartModule, ReviewsModule, WishlistModule, NotificationsModule],
+  imports: [AuthModule, UsersModule, ProductsModule, OrdersModule, CartModule, ReviewsModule, WishlistModule, NotificationsModule, SiteSettingsModule],
   controllers: [AppController],
   providers: [AppService],
 })

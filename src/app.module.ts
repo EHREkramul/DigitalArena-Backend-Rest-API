@@ -7,9 +7,10 @@ import { ProductsModule } from './products/products.module';
 import { OrdersModule } from './orders/orders.module';
 import { CartModule } from './cart/cart.module';
 import { ReviewsModule } from './reviews/reviews.module';
+import { WishlistModule } from './wishlist/wishlist.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, ProductsModule, OrdersModule, CartModule, ReviewsModule],
+  imports: [AuthModule, UsersModule, ProductsModule, OrdersModule, CartModule, ReviewsModule, WishlistModule],
   controllers: [AppController],
   providers: [AppService],
 })

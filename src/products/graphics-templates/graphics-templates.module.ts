@@ -4,6 +4,6 @@ import { GraphicsTemplatesService } from './graphics-templates.service';
 
 @Module({
   controllers: [GraphicsTemplatesController],
-  providers: [GraphicsTemplatesService]
+  providers: [GraphicsTemplatesService],
 })
 export class GraphicsTemplatesModule {}

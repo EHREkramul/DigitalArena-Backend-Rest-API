@@ -9,7 +9,9 @@ describe('PresentationSlidesController', () => {
       controllers: [PresentationSlidesController],
     }).compile();
 
-    controller = module.get<PresentationSlidesController>(PresentationSlidesController);
+    controller = module.get<PresentationSlidesController>(
+      PresentationSlidesController,
+    );
   });
 
   it('should be defined', () => {

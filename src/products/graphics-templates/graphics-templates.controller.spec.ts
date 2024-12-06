@@ -9,7 +9,9 @@ describe('GraphicsTemplatesController', () => {
       controllers: [GraphicsTemplatesController],
     }).compile();
 
-    controller = module.get<GraphicsTemplatesController>(GraphicsTemplatesController);
+    controller = module.get<GraphicsTemplatesController>(
+      GraphicsTemplatesController,
+    );
   });
 
   it('should be defined', () => {

@@ -4,6 +4,6 @@ import { EbooksService } from './ebooks.service';
 
 @Module({
   controllers: [EbooksController],
-  providers: [EbooksService]
+  providers: [EbooksService],
 })
 export class EbooksModule {}

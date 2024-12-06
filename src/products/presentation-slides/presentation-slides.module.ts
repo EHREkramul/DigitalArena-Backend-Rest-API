@@ -4,6 +4,6 @@ import { PresentationSlidesService } from './presentation-slides.service';
 
 @Module({
   controllers: [PresentationSlidesController],
-  providers: [PresentationSlidesService]
+  providers: [PresentationSlidesService],
 })
 export class PresentationSlidesModule {}

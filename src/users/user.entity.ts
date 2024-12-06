@@ -1,0 +1,51 @@
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+
+export enum UserRole {
+  USER = 'USER',
+  ADMIN = 'ADMIN',
+}
+
+@Entity({ name: 'users' })
+export class User {
+  @PrimaryGeneratedColumn('uuid') // Unique identifier using UUID.
+  id: string;
+
+  @Column({ type: 'varchar', length: 50, unique: true }) // Unique username.
+  username: string;
+
+  @Column({ type: 'varchar', length: 100, unique: true }) // Unique email.
+  email: string;
+
+  @Column({ type: 'varchar', length: 255 }) // Hashed password.
+  password: string;
+
+  @Column({ type: 'varchar', length: 15, nullable: true }) // Optional phone number.
+  phone?: string;
+
+  @Column({ type: 'enum', enum: UserRole, default: UserRole.USER }) // Enum for user roles.
+  role: UserRole;
+
+  @Column({ type: 'boolean', default: true }) // Active state of the user.
+  isActive: boolean;
+
+  @Column({ type: 'varchar', length: 255, nullable: true }) // Path to profile image.
+  profileImage?: string;
+
+  @CreateDateColumn({ type: 'timestamp' }) // Timestamp when the user is created.
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' }) // Timestamp when the user is updated.
+  updatedAt: Date;
+
+  @Column({ type: 'timestamp', nullable: true }) // Last login timestamp.
+  lastLoginAt?: Date;
+
+  @Column({ type: 'boolean', default: false }) // Verification status.
+  isVerified: boolean;
+}

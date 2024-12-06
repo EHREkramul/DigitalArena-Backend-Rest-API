@@ -11,9 +11,13 @@ import { WishlistModule } from './wishlist/wishlist.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { SiteSettingsModule } from './site-settings/site-settings.module';
 import { LogsModule } from './logs/logs.module';
+import { DownloadsModule } from './downloads/downloads.module';
+import { CategoriesModule } from './categories/categories.module';
+import { SubcategoriesModule } from './subcategories/subcategories.module';
+import { CouponsModule } from './coupons/coupons.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, ProductsModule, OrdersModule, CartModule, ReviewsModule, WishlistModule, NotificationsModule, SiteSettingsModule, LogsModule],
+  imports: [AuthModule, UsersModule, ProductsModule, OrdersModule, CartModule, ReviewsModule, WishlistModule, NotificationsModule, SiteSettingsModule, LogsModule, DownloadsModule, CategoriesModule, SubcategoriesModule, CouponsModule],
   controllers: [AppController],
   providers: [AppService],
 })

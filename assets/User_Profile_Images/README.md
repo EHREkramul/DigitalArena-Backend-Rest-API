@@ -1,0 +1,2 @@
+Contains Profile Pictures of users. Each folder (ex.: user1, user2, ...) contains all images related to a user. Folders are named with userID.
+Contents are ignored by .gitignore because of the file size.

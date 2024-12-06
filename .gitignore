@@ -1,9 +1,14 @@
+# Ignore everything in the assets folder and its subfolders
+/assets/*
+
+# Include only README.md files (keeping them tracked in Git)
+!assets/**/README.md
+
+
 # compiled output
 /dist
 /node_modules
 /build
-assets/homepage_carousel/*
-!assets/homepage_carousel/README.md
 
 # Logs
 logs

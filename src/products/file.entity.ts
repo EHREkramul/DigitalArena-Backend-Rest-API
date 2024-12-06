@@ -22,9 +22,6 @@ export class File {
   @Column({ type: 'varchar', length: 50, nullable: false }) // File type/extension.
   file_type: string;
 
-  @Column({ type: 'boolean', default: true }) // Specifies if the file is downloadable.
-  is_downloadable: boolean;
-
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }) // Automatically sets creation timestamp.
   created_at: Date;
 

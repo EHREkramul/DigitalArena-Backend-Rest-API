@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 
 export enum UserRole {
-  USER = 'BUYER',
+  BUYER = 'BUYER',
   ADMIN = 'ADMIN',
 }
 
@@ -30,7 +30,7 @@ export class User {
   @Column({ type: 'varchar', length: 15, nullable: true }) // Optional phone number.
   phone?: string;
 
-  @Column({ type: 'enum', enum: UserRole, default: UserRole.USER }) // Enum for user roles.
+  @Column({ type: 'enum', enum: UserRole, default: UserRole.BUYER }) // Enum for user roles.
   role: UserRole;
 
   @Column({ type: 'boolean', default: true }) // Active state of the user.

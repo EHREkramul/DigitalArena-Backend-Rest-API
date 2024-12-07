@@ -31,7 +31,7 @@ import { Subcategory } from './entities/subcategory.entity';
 import { Coupon } from './entities/coupon.entity';
 import { OrderItem } from './entities/order-item.entity';
 import { CartItem } from './entities/cart-item.entity';
-import { File } from './entities/file.entity';
+import { Files } from './entities/files.entity';
 
 @Module({
   imports: [
@@ -51,7 +51,7 @@ import { File } from './entities/file.entity';
       Coupon,
       OrderItem,
       CartItem,
-      File,
+      Files,
     ]),
     TypeOrmModule.forRoot({
       type: 'postgres',

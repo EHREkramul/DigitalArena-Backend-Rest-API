@@ -7,13 +7,13 @@ import { PresentationSlidesModule } from './presentation-slides/presentation-sli
 import { ThreeDModelsModule } from './three_d-models/three_d-models.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Product } from 'src/entities/product.entity';
-import { File } from 'src/entities/file.entity';
+import { Files } from 'src/entities/files.entity';
 
 @Module({
   controllers: [ProductsController],
   providers: [ProductsService],
   imports: [
-    TypeOrmModule.forFeature([Product, File]), // Add Product and File to use repository in service.
+    TypeOrmModule.forFeature([Product, Files]), // Add Product and File to use repository in service.
     EbooksModule,
     GraphicsTemplatesModule,
     PresentationSlidesModule,

@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import { Category } from './category.entity';
 import { Subcategory } from '../entities/subcategory.entity';
-import { File } from './file.entity';
+import { File } from './files.entity';
 
 @Entity({ name: 'products' })
 export class Product {

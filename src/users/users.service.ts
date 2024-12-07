@@ -10,8 +10,8 @@ export class UsersService {
     private userRepository: Repository<User>,
   ) {}
 
-    // Returns all users from db to controller.
-    getUsers() {
-        return this.userRepository.find(); // Fetch all users from db.
-    }
+  // Returns all users from db to controller.
+  getUsers() {
+    return this.userRepository.find(); // Fetch all users from db.
+  }
 }

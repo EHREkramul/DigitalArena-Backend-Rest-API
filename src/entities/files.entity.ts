@@ -9,7 +9,7 @@ import {
 import { Product } from './product.entity';
 
 @Entity({ name: 'files' })
-export class File {
+export class Files {
   @PrimaryGeneratedColumn('uuid') // Unique identifier using UUID.
   id: string;
 

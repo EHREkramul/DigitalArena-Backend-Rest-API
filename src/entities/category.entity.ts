@@ -5,8 +5,8 @@ import {
   CreateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { Subcategory } from '../subcategories/subcategory.entity'; // Adjust to point to Subcategory entity
-import { Product } from 'src/products/product.entity';
+import { Subcategory } from '../entities/subcategory.entity'; // Adjust to point to Subcategory entity
+import { Product } from 'src/entities/product.entity';
 
 @Entity({ name: 'categories' })
 export class Category {

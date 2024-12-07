@@ -8,9 +8,9 @@ import {
   JoinColumn,
   OneToMany,
 } from 'typeorm';
-import { Category } from '../categories/category.entity';
-import { Subcategory } from '../subcategories/subcategory.entity';
-import { File } from '../products/file.entity';
+import { Category } from './category.entity';
+import { Subcategory } from '../entities/subcategory.entity';
+import { File } from './file.entity';
 
 @Entity({ name: 'products' })
 export class Product {

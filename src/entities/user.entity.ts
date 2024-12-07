@@ -1,4 +1,4 @@
-import { Order } from 'src/orders/order.entity';
+import { Order } from 'src/entities/order.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,

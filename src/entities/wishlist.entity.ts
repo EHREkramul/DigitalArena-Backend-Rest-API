@@ -6,8 +6,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { User } from '../users/user.entity';
-import { Product } from '../products/product.entity';
+import { User } from '../entities/user.entity';
+import { Product } from './product.entity';
 
 @Entity({ name: 'wishlist' })
 export class Wishlist {

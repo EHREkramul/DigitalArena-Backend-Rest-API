@@ -1,0 +1,168 @@
+[33mcommit 21b01a134a82eff22e9a71efc5ec3e23194ce473[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Author: EHREkramul <ehr.ekramul@gmail.com>
+Date:   Fri Dec 6 23:40:24 2024 +0600
+
+    Initiate
+
+[33mcommit fd3935b0871c2c2160946fe2250e373200435198[m
+Author: EHREkramul <ehr.ekramul@gmail.com>
+Date:   Fri Dec 6 23:04:28 2024 +0600
+
+    Add multiple entities to the TypeORM configuration in app.module.ts for enhanced database integration
+
+[33mcommit 511e608de342f04db3e6ee343f75e5532e9452c6[m
+Author: EHREkramul <ehr.ekramul@gmail.com>
+Date:   Fri Dec 6 22:56:20 2024 +0600
+
+    Add Cart, Log, Wishlist, and Download entities with relationships to User and Product; implement automatic timestamps
+
+[33mcommit bd032d1cfe3d2cb43211378d0df72ed33a9e5595[m
+Author: EHREkramul <ehr.ekramul@gmail.com>
+Date:   Fri Dec 6 21:57:29 2024 +0600
+
+    Integrate TypeORM for PostgreSQL and update UserRole enum; enhance User entity with automatic timestamps
+
+[33mcommit b9abf3b771e7a94b8b27d1682872bd82a0205bab[m
+Author: EHREkramul <ehr.ekramul@gmail.com>
+Date:   Fri Dec 6 21:53:15 2024 +0600
+
+    Refactor 3DModels module to ThreeDModels, updating controller, service, and module files; remove old 3DModels implementation
+
+[33mcommit f387e2ea4eb2aece0d1ca42b9249f88afdcbd0d2[m
+Author: EHREkramul <ehr.ekramul@gmail.com>
+Date:   Fri Dec 6 21:08:22 2024 +0600
+
+    Add 3DModels and PresentationSlides modules with controllers and services, and integrate them into Products module
+
+[33mcommit e64089d9ad80c11f183fc4ec850f1d01955ddf35[m
+Author: EHREkramul <ehr.ekramul@gmail.com>
+Date:   Fri Dec 6 21:06:32 2024 +0600
+
+    Add GraphicsTemplates module with controller and service, and integrate it into Products module
+
+[33mcommit 2cb154f8ffc53ddd4b99fa9d16dde814ae04aa71[m
+Author: EHREkramul <ehr.ekramul@gmail.com>
+Date:   Fri Dec 6 21:05:21 2024 +0600
+
+    Add Ebooks module with controller and service, and integrate it into Products module
+
+[33mcommit 6ac7e1b65dc65f6ad7cdbab622d21968f3e24442[m
+Author: EHREkramul <ehr.ekramul@gmail.com>
+Date:   Fri Dec 6 20:48:03 2024 +0600
+
+    Update .gitignore to ignore all assets except README.md files
+
+[33mcommit 7e0d4fe64ca50f79786919a7e7671807be0bb451[m
+Author: EHREkramul <ehr.ekramul@gmail.com>
+Date:   Fri Dec 6 20:45:24 2024 +0600
+
+    Add assets folder structure
+
+[33mcommit 9aaff47d6522e51bc1369922d7c1494f4cdeb92d[m
+Author: EHREkramul <ehr.ekramul@gmail.com>
+Date:   Fri Dec 6 20:11:03 2024 +0600
+
+    Refactor module imports and ensure consistent provider formatting across all modules
+
+[33mcommit 7d7c743a229d9392727b1bc3629a1b5f114750e8[m
+Author: EHREkramul <ehr.ekramul@gmail.com>
+Date:   Fri Dec 6 20:09:08 2024 +0600
+
+    Add Downloads, Categories, Subcategories, and Coupons modules with controllers and services
+
+[33mcommit e3167e57143e832a2aee4810eb9209203e886290[m
+Author: EHREkramul <ehr.ekramul@gmail.com>
+Date:   Fri Dec 6 20:07:37 2024 +0600
+
+    Add Logs module with controller and service
+
+[33mcommit 20ed70836a3b311884b0bf96632635eedcca056a[m
+Author: EHREkramul <ehr.ekramul@gmail.com>
+Date:   Fri Dec 6 20:05:55 2024 +0600
+
+    Add Site Settings module with controller and service
+
+[33mcommit 279135e9aa5ddd2d5ed999e88dd4114de6030cbc[m
+Author: EHREkramul <ehr.ekramul@gmail.com>
+Date:   Fri Dec 6 20:05:34 2024 +0600
+
+    Add Notifications module with controller and service
+
+[33mcommit 143077a38d07de0c022e9f4dbe4388828260eced[m
+Author: EHREkramul <ehr.ekramul@gmail.com>
+Date:   Fri Dec 6 20:04:46 2024 +0600
+
+    Add Wishlist module with controller and service
+
+[33mcommit 4d66d34b5f64e3928993c5614252d2f924c58164[m
+Author: EHREkramul <ehr.ekramul@gmail.com>
+Date:   Fri Dec 6 20:03:59 2024 +0600
+
+    Add Reviews module with controller and service
+
+[33mcommit fe0320f8fdbe98820d81fb335d31499c73a03962[m
+Author: EHREkramul <ehr.ekramul@gmail.com>
+Date:   Fri Dec 6 20:02:33 2024 +0600
+
+    Add Cart module with controller and service
+
+[33mcommit 48361b00d9aeccf0f508bf76c2e5ceac72d34ba6[m
+Author: EHREkramul <ehr.ekramul@gmail.com>
+Date:   Fri Dec 6 20:01:45 2024 +0600
+
+    Add Orders module with controller and service
+
+[33mcommit 633211cd938419563acc3268de24a7e6b9317399[m
+Author: EHREkramul <ehr.ekramul@gmail.com>
+Date:   Fri Dec 6 20:00:59 2024 +0600
+
+    Add Products module with controller and service
+
+[33mcommit 5ced703cf2f9df56147b16e387d2e0ccc63dcb67[m
+Author: EHREkramul <ehr.ekramul@gmail.com>
+Date:   Fri Dec 6 19:59:51 2024 +0600
+
+    Add Users module with controller and service
+
+[33mcommit 844831d81ed2eb0fd48ae10ebf480cfb04c237a1[m
+Author: EHREkramul <ehr.ekramul@gmail.com>
+Date:   Fri Dec 6 19:59:10 2024 +0600
+
+    Rename parent folder
+
+[33mcommit 7dec92e79043c0d18af8b3d2e1287b0e3a5cf1b4[m
+Author: EHREkramul <ehr.ekramul@gmail.com>
+Date:   Fri Dec 6 19:56:10 2024 +0600
+
+    Implement authentication module with controller and service
+
+[33mcommit cdca57c7835b00d2f561e68951c7633a2fe8254a[m
+Merge: 6095b7a 1011e84
+Author: EHREkramul <ehr.ekramul@gmail.com>
+Date:   Fri Dec 6 15:56:46 2024 +0600
+
+    Merge branch 'master' of https://github.com/AzharSabbir/Digital_Arena
+
+[33mcommit 1011e84d7125389685edccf4da049d90e8f83bba[m
+Author: Ekramul Haque <ehr.ekramul@gmail.com>
+Date:   Fri Dec 6 15:56:30 2024 +0600
+
+    Create LICENSE
+
+[33mcommit 6095b7a03f661c0ec0c09121a88376e7db45b59a[m
+Author: EHREkramul <ehr.ekramul@gmail.com>
+Date:   Fri Dec 6 15:55:05 2024 +0600
+
+    Update gitignore
+
+[33mcommit e7410a9f85bf95af6684cc9478cd121d82c887a1[m
+Author: EHREkramul <ehr.ekramul@gmail.com>
+Date:   Fri Dec 6 12:12:35 2024 +0600
+
+    Setup Environment
+
+[33mcommit ac6b26823d97a24d13429022cd27544c3d36bdfe[m
+Author: EHREkramul <ehr.ekramul@gmail.com>
+Date:   Fri Dec 6 12:06:01 2024 +0600
+
+    first commit

@@ -6,8 +6,8 @@ import {
   UpdateDateColumn,
   ManyToOne,
 } from 'typeorm';
-import { Order } from '../orders/order.entity';
-import { Product } from '../products/product.entity';
+import { Order } from './order.entity';
+import { Product } from './product.entity';
 
 @Entity({ name: 'order_items' })
 export class OrderItem {

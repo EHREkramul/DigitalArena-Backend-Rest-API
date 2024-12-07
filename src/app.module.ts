@@ -16,22 +16,22 @@ import { CategoriesModule } from './categories/categories.module';
 import { SubcategoriesModule } from './subcategories/subcategories.module';
 import { CouponsModule } from './coupons/coupons.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './users/user.entity';
-import { Order } from './orders/order.entity';
-import { Product } from './products/product.entity';
-import { Cart } from './cart/cart.entity';
-import { Review } from './reviews/review.entity';
-import { Wishlist } from './wishlist/wishlist.entity';
-import { Notification } from './notifications/notification.entity';
-import { SiteSetting } from './site-settings/site-setting.entity';
-import { Log } from './logs/log.entity';
-import { Download } from './downloads/download.entity';
-import { Category } from './categories/category.entity';
-import { Subcategory } from './subcategories/subcategory.entity';
-import { Coupon } from './coupons/coupon.entity';
-import { OrderItem } from './orders/order-item.entity';
-import { CartItem } from './cart/cart-item.entity';
-import { File } from './products/file.entity';
+import { User } from './entities/user.entity';
+import { Order } from './entities/order.entity';
+import { Product } from './entities/product.entity';
+import { Cart } from './entities/cart.entity';
+import { Review } from './entities/review.entity';
+import { Wishlist } from './entities/wishlist.entity';
+import { Notification } from './entities/notification.entity';
+import { SiteSetting } from './entities/site-setting.entity';
+import { Log } from './entities/log.entity';
+import { Download } from './entities/download.entity';
+import { Category } from './entities/category.entity';
+import { Subcategory } from './entities/subcategory.entity';
+import { Coupon } from './entities/coupon.entity';
+import { OrderItem } from './entities/order-item.entity';
+import { CartItem } from './entities/cart-item.entity';
+import { File } from './entities/file.entity';
 
 @Module({
   imports: [
@@ -43,24 +43,7 @@ import { File } from './products/file.entity';
       username: 'postgres',
       password: '3639',
       database: 'digital_arena',
-      entities: [
-        User,
-        Order,
-        Product,
-        Cart,
-        Review,
-        Wishlist,
-        Notification,
-        SiteSetting,
-        Log,
-        Download,
-        Category,
-        Subcategory,
-        Coupon,
-        OrderItem,
-        CartItem,
-        File,
-      ], // Include the User entity
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
     AuthModule,

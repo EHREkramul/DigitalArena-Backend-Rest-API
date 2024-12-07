@@ -10,8 +10,8 @@ import { User } from './user.entity';
 
 @Entity({ name: 'logs' })
 export class Log {
-  @PrimaryGeneratedColumn('uuid') // Unique identifier for the log entry using UUID.
-  id: string;
+  @PrimaryGeneratedColumn() // Unique identifier for the log entry. It's auto-generated number.
+  id: number;
 
   @ManyToOne(() => User, { nullable: true }) // Many-to-one relationship with User (nullable).
   @JoinColumn({ name: 'user_id' }) // Foreign key to the users table.

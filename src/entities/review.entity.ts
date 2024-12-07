@@ -12,8 +12,8 @@ import { Product } from './product.entity';
 
 @Entity({ name: 'reviews' })
 export class Review {
-  @PrimaryGeneratedColumn('uuid') // Unique identifier for the review using UUID.
-  id: string;
+  @PrimaryGeneratedColumn() // Unique identifier for the review. It's auto-generated number.
+  id: number;
 
   @ManyToOne(() => User, (user) => user.id, { nullable: false }) // Each review is linked to a user.
   @JoinColumn({ name: 'user_id' })

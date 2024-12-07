@@ -10,8 +10,8 @@ import { User } from './user.entity';
 
 @Entity({ name: 'coupons' })
 export class Coupon {
-  @PrimaryGeneratedColumn('uuid') // Unique identifier for each coupon using UUID.
-  id: string;
+  @PrimaryGeneratedColumn() // Unique identifier for the coupon. It's auto-generated number.
+  id: number;
 
   @Column({ type: 'varchar', length: 100, unique: true }) // Coupon code (e.g., "SUMMER2024").
   code: string;

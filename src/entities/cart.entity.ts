@@ -9,8 +9,8 @@ import { User } from './user.entity';
 
 @Entity({ name: 'cart' })
 export class Cart {
-  @PrimaryGeneratedColumn('uuid') // Unique identifier for the cart using UUID.
-  id: string;
+  @PrimaryGeneratedColumn() // Unique identifier for the cart. It's auto-generated number.
+  id: number;
 
   @ManyToOne(() => User, (user) => user.id, {
     nullable: false,

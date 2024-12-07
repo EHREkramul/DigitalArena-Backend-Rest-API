@@ -15,8 +15,8 @@ export enum UserRole {
 
 @Entity({ name: 'users' })
 export class User {
-  @PrimaryGeneratedColumn('uuid') // Unique identifier using UUID.
-  id: string;
+  @PrimaryGeneratedColumn() // Unique identifier for the user. It's auto-generated number.
+  id: number;
 
   @Column({ type: 'varchar', length: 50, unique: true }) // Unique username.
   username: string;
@@ -40,7 +40,7 @@ export class User {
   profileImage?: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true }) // Full name of the user.
-  fullName?: string;
+  fullName: string;
 
   @CreateDateColumn({ type: 'timestamp' }) // Timestamp when the user is created. It's set automatically.
   createdAt: Date;
@@ -50,9 +50,6 @@ export class User {
 
   @Column({ type: 'timestamp', nullable: true }) // Last login timestamp.
   lastLoginAt?: Date;
-
-  @Column({ type: 'boolean', default: false }) // Verification status.
-  isVerified: boolean;
 
   // Add the One-to-Many relationship
   @OneToMany(() => Order, (order) => order.user)

@@ -11,8 +11,8 @@ import { User } from './user.entity';
 
 @Entity({ name: 'notifications' })
 export class Notification {
-  @PrimaryGeneratedColumn('uuid') // Unique identifier for the notification entry using UUID.
-  id: string;
+  @PrimaryGeneratedColumn() // Unique identifier for the notification. It's auto-generated number.
+  id: number;
 
   @ManyToOne(() => User, (user) => user.id, { nullable: false }) // Each notification is linked to a user (recipient).
   @JoinColumn({ name: 'user_id' })

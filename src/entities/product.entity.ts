@@ -14,8 +14,8 @@ import { Files } from './files.entity';
 
 @Entity({ name: 'products' })
 export class Product {
-  @PrimaryGeneratedColumn('uuid') // Unique identifier using UUID.
-  id: string;
+  @PrimaryGeneratedColumn() // Unique identifier for the product. It's auto-generated number.
+  id: number;
 
   @Column({ type: 'varchar', length: 255 }) // Name of the product.
   name: string;

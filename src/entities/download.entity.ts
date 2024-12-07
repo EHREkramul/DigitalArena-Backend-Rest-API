@@ -11,8 +11,8 @@ import { Product } from './product.entity'; // Assuming Product entity is in the
 
 @Entity({ name: 'downloads' })
 export class Download {
-  @PrimaryGeneratedColumn('uuid') // Unique identifier for the download record using UUID.
-  id: string;
+  @PrimaryGeneratedColumn() // Unique identifier for the download. It's auto-generated number.
+  id: number;
 
   @ManyToOne(() => User, { nullable: false }) // Foreign key to the users table.
   @JoinColumn({ name: 'user_id' }) // Linking to the user who downloaded the product.

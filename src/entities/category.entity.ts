@@ -10,8 +10,8 @@ import { Product } from 'src/entities/product.entity';
 
 @Entity({ name: 'categories' })
 export class Category {
-  @PrimaryGeneratedColumn('uuid') // Unique identifier using UUID.
-  id: string;
+  @PrimaryGeneratedColumn() // Unique identifier for the category. It's auto-generated number.
+  id: number;
 
   @Column({ type: 'varchar', length: 100, unique: true, nullable: false }) // Unique and non-nullable category name.
   name: string;

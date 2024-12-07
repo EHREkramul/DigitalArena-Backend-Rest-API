@@ -10,8 +10,8 @@ import { User } from './user.entity';
 
 @Entity({ name: 'orders' })
 export class Order {
-  @PrimaryGeneratedColumn('uuid') // Unique identifier using UUID.
-  id: string;
+  @PrimaryGeneratedColumn() // Unique identifier for the order. It's auto-generated number.
+  id: number;
 
   @ManyToOne(() => User, (user) => user.orders, { nullable: false }) // Many orders belong to one user.
   user: User;

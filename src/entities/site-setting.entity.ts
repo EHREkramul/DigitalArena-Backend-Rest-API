@@ -8,8 +8,8 @@ import {
 
 @Entity({ name: 'site_settings' })
 export class SiteSetting {
-  @PrimaryGeneratedColumn('uuid') // Unique identifier for the setting entry using UUID.
-  id: string;
+  @PrimaryGeneratedColumn() // Unique identifier for the setting. It's auto-generated number.
+  id: number;
 
   @Column({ type: 'varchar', length: 255, unique: true }) // Unique key for the setting.
   key: string;

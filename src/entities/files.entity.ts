@@ -10,8 +10,8 @@ import { Product } from './product.entity';
 
 @Entity({ name: 'files' })
 export class Files {
-  @PrimaryGeneratedColumn('uuid') // Unique identifier using UUID.
-  id: string;
+  @PrimaryGeneratedColumn() // Unique identifier for the file. It's auto-generated number.
+  id: number;
 
   @ManyToOne(() => Product, (product) => product.files, { nullable: false }) // Many files belong to one product.
   product: Product;

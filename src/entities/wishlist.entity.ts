@@ -11,8 +11,8 @@ import { Product } from './product.entity';
 
 @Entity({ name: 'wishlist' })
 export class Wishlist {
-  @PrimaryGeneratedColumn('uuid') // Unique identifier for the wishlist entry using UUID.
-  id: string;
+  @PrimaryGeneratedColumn() // Unique identifier for the wishlist entry. It's auto-generated number.
+  id: number;
 
   @ManyToOne(() => User, (user) => user.id, { nullable: false }) // Each wishlist entry is linked to a user.
   @JoinColumn({ name: 'user_id' })

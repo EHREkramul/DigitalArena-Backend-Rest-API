@@ -11,8 +11,8 @@ import { Product } from 'src/entities/product.entity';
 
 @Entity({ name: 'subcategories' })
 export class Subcategory {
-  @PrimaryGeneratedColumn('uuid') // Unique identifier using UUID.
-  id: string;
+  @PrimaryGeneratedColumn() // Unique identifier for the subcategory. It's auto-generated number.
+  id: number;
 
   @Column({ type: 'varchar', length: 100, nullable: false }) // Subcategory name.
   name: string;

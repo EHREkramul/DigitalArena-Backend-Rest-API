@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import { Category } from './category.entity';
 import { Subcategory } from '../entities/subcategory.entity';
-import { File } from './files.entity';
+import { Files } from './files.entity';
 
 @Entity({ name: 'products' })
 export class Product {
@@ -60,6 +60,6 @@ export class Product {
   preview_url?: string;
 
   // One-to-Many relationship with files (a product can have multiple files)
-  @OneToMany(() => File, (file) => file.product)
+  @OneToMany(() => Files, (file) => file.product)
   files: File[];
 }

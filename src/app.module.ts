@@ -35,7 +35,24 @@ import { File } from './entities/file.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([
+      User,
+      Order,
+      Product,
+      Cart,
+      Review,
+      Wishlist,
+      Notification,
+      SiteSetting,
+      Log,
+      Download,
+      Category,
+      Subcategory,
+      Coupon,
+      OrderItem,
+      CartItem,
+      File,
+    ]),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',

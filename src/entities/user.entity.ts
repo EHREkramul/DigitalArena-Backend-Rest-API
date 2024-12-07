@@ -39,6 +39,9 @@ export class User {
   @Column({ type: 'varchar', length: 255, nullable: true }) // Path to profile image.
   profileImage?: string;
 
+  @Column({ type: 'varchar', length: 255, nullable: true }) // Full name of the user.
+  fullName?: string;
+
   @CreateDateColumn({ type: 'timestamp' }) // Timestamp when the user is created. It's set automatically.
   createdAt: Date;
 

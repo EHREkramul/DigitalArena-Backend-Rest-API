@@ -37,12 +37,13 @@ import dbConfig from './config/db.config';
 
 @Module({
   imports: [
-    ConfigModule.forRoot( // for environment variables in .env file
+    ConfigModule.forRoot(
+      // for environment variables in .env file
       {
         isGlobal: true,
         expandVariables: true,
         load: [dbConfig],
-      }
+      },
     ),
     TypeOrmModule.forRootAsync({
       useFactory: dbConfig,

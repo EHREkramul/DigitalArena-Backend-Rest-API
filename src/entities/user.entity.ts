@@ -29,6 +29,9 @@ export class User {
   @Column({ type: 'varchar', length: 255 }) // Hashed password.
   password: string;
 
+  @Column({ type: 'varchar', length: 500, nullable: true }) // Hashed refresh token.
+  refreshToken?: string;
+
   @Column({ type: 'varchar', length: 15, nullable: true }) // Optional phone number.
   phone?: string;
 
@@ -74,11 +77,11 @@ export class User {
 
   @BeforeInsert()
   fullNameToTitleCase() {
-    if(this.fullName) {
+    if (this.fullName) {
       this.fullName = this.fullName
-      .split(' ')
-      .map((word) => word[0].toUpperCase() + word.slice(1).toLowerCase())
-      .join(' ');
+        .split(' ')
+        .map((word) => word[0].toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
     }
   }
 

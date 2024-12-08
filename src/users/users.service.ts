@@ -3,6 +3,7 @@ import {
   NotFoundException,
   Injectable,
   BadRequestException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
@@ -20,8 +21,33 @@ export class UsersService {
 
   //////////////////////////////////////// GET REQUESTS ////////////////////////////////////////
 
-  async getAllUsers() {
-    return await this.userRepository.find();
+  async getAllUsers(id: number) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    // Check if the user exists or not with id.
+    if (!user) {
+      throw new NotFoundException(`User not found`); // Throw exception if user not found.
+    }
+
+    if (user.role !== 'ADMIN') {
+      throw new UnauthorizedException(`Only Admin users can access this route`);
+    }
+
+    return await this.userRepository.find({
+      select: [
+        'id',
+        'username',
+        'email',
+        'fullName',
+        'phone',
+        'role',
+        'isActive',
+        'profileImage',
+        'createdAt',
+        'updatedAt',
+        'lastLoginAt',
+      ], // We don't want to send password on response.
+      order: { id: 'ASC' },
+    });
   }
 
   // Get User by Id.
@@ -37,7 +63,7 @@ export class UsersService {
     return user;
   }
 
-  // Get User by Email.
+  /*// Get User by Email.
   async getUserByEmail(email: string) {
     if (!email) {
       throw new NotFoundException(`Email is required`);
@@ -50,14 +76,14 @@ export class UsersService {
     return user;
   }
 
-  // Get User by Id.
+  // Get User by username.
   async getUserByUsername(username: string) {
     const user = await this.userRepository.findOne({ where: { username } });
     if (!user) {
       throw new NotFoundException(`User with username ${username} not found`);
     }
     return user;
-  }
+  }*/
 
   //////////////////////////////////////// POST REQUESTS ////////////////////////////////////////
 
@@ -110,7 +136,10 @@ export class UsersService {
   // Update an User Info.
   async updateUser(id: number, updateUserDto: UpdateUserDto) {
     // Check if the user exists or not with id.
-    if (!(await this.userRepository.findOne({ where: { id } }))) {
+    if (
+      id !== undefined &&
+      !(await this.userRepository.findOne({ where: { id } }))
+    ) {
       throw new NotFoundException(`User with id ${id} not found`); // Throw exception if user not found.
     }
 
@@ -153,7 +182,20 @@ export class UsersService {
   //////////////////////////////////////// DELETE REQUESTS ////////////////////////////////////////
 
   // Delete an User by id.
-  async deleteUser(id: number) {
+  async deleteUser(id: number, requesterId: number) {
+    // Validate requester permission.
+    const requester = await this.userRepository.findOne({
+      where: { id: requesterId },
+    });
+    if (!requester) {
+      throw new NotFoundException(`Requester not found`);
+    }
+
+    // Check if the requester is not ADMIN.
+    if (requester.role !== 'ADMIN') {
+      throw new UnauthorizedException(`Only Admin users can access this route`);
+    }
+
     const user = await this.userRepository.findOne({ where: { id } });
     // Check if the user exists or not with id.
     if (!user) {
@@ -162,10 +204,18 @@ export class UsersService {
 
     // Check if id is not ADMIN.
     if (user.role === 'ADMIN') {
-      throw new BadRequestException(`Admin users cannot be deleted`);
+      throw new BadRequestException(`Admin cannot be deleted`);
     }
 
     const result = await this.userRepository.delete(id);
     return result;
+  }
+
+  //////////////////////////////////////// Other Methods ////////////////////////////////////////
+  async updateHashedRefreshToken(userId: number, hashedRefreshToken: string) {
+    return await this.userRepository.update(
+      { id: userId },
+      { refreshToken: hashedRefreshToken },
+    );
   }
 }

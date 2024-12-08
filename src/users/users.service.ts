@@ -53,10 +53,42 @@ export class UsersService {
   // Get User by Id.
   async getUserById(id: number) {
     if (!id) {
-      throw new NotFoundException(`Id is required`);
+      throw new BadRequestException(`Id is required`);
     }
 
-    const user = await this.userRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({
+      where: { id },
+      select: [
+        'id',
+        'username',
+        'email',
+        'phone',
+        'role',
+        'isActive',
+        'profileImage',
+        'fullName',
+        'createdAt',
+        'updatedAt',
+        'lastLoginAt',
+      ],
+    });
+    if (!user) {
+      throw new NotFoundException(`User with id ${id} not found`);
+    }
+    return user;
+  }
+
+  // Get users refresh token.
+  async getUserRefreshTokenFromDB(id: number) {
+    if (!id) {
+      throw new BadRequestException(`Id is required`);
+    }
+
+    const user = await this.userRepository.findOne({
+      where: { id },
+      select: ['id', 'refreshToken'],
+    });
+
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
     }
@@ -131,6 +163,11 @@ export class UsersService {
     return user;
   }
 
+  // Update Last Login.
+  async updateLastLogin(id: number) {
+    await this.userRepository.update(id, { lastLoginAt: new Date() });
+  }
+
   //////////////////////////////////////// PATCH REQUESTS ////////////////////////////////////////
 
   // Update an User Info.
@@ -182,20 +219,7 @@ export class UsersService {
   //////////////////////////////////////// DELETE REQUESTS ////////////////////////////////////////
 
   // Delete an User by id.
-  async deleteUser(id: number, requesterId: number) {
-    // Validate requester permission.
-    const requester = await this.userRepository.findOne({
-      where: { id: requesterId },
-    });
-    if (!requester) {
-      throw new NotFoundException(`Requester not found`);
-    }
-
-    // Check if the requester is not ADMIN.
-    if (requester.role !== 'ADMIN') {
-      throw new UnauthorizedException(`Only Admin users can access this route`);
-    }
-
+  async deleteUser(id: number) {
     const user = await this.userRepository.findOne({ where: { id } });
     // Check if the user exists or not with id.
     if (!user) {

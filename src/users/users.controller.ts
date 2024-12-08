@@ -6,7 +6,6 @@ import {
   Param,
   Body,
   ParseIntPipe,
-  Query,
   ValidationPipe,
   Delete,
   UseGuards,
@@ -18,21 +17,24 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Role } from 'src/auth/enums/role.enum';
+import { RolesGuard } from 'src/auth/guards/roles/roles.guard';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly appService: UsersService) {}
 
-  //////////////////////////////////////// GET REQUESTS ////////////////////////////////////////
-
+  /////////////////////////////// GET All Users ///////////////////////////////
   @UseGuards(JwtAuthGuard)
-  @Get('getAllUsers') // Request to get all users. Get all the information stored in database of users.
+  @Get('getAllUsers')
   getAllUsers(@Req() req) {
     return this.appService.getAllUsers(req.user.id);
   }
 
+  /////////////////////////////// GET User By ID ///////////////////////////////
   @UseGuards(JwtAuthGuard)
-  @Get('getUserById') // Request to get individual user by id. Get all the information stored in database of an user.
+  @Get('getUserById')
   getUserById(@Req() req) {
     return this.appService.getUserById(req.user.id);
   }
@@ -47,17 +49,15 @@ export class UsersController {
     return this.appService.getUserByUsername(username);
   }*/
 
-  //////////////////////////////////////// POST REQUESTS ////////////////////////////////////////
-
-  @Post('createUser') // Request to create a new user. Create a new user and store in database.
+  /////////////////////////////// Create User ///////////////////////////////
+  @Post('createUser')
   createUser(@Body(ValidationPipe) createUserDto: CreateUserDto) {
     return this.appService.createUser(createUserDto);
   }
 
-  //////////////////////////////////////// PATCH REQUESTS ////////////////////////////////////////
-
+  /////////////////////////////// Update an User Information ///////////////////////////////
   @UseGuards(JwtAuthGuard)
-  @Patch('updateUser') // Request to update an user by id. Update the information stored in database of an user.
+  @Patch('updateUser')
   updateUser(@Req() req, @Body(ValidationPipe) updateUserDto: UpdateUserDto) {
     if (!req.user.id) {
       throw new BadRequestException(`Id is required`);
@@ -65,12 +65,12 @@ export class UsersController {
     return this.appService.updateUser(req.user.id, updateUserDto);
   }
 
-  //////////////////////////////////////// DELETE REQUESTS ////////////////////////////////////////
-
+  /////////////////////////////// Delete an User ///////////////////////////////
+  @Roles(Role.ADMIN)
+  @UseGuards(RolesGuard)
   @UseGuards(JwtAuthGuard)
-  @Delete('deleteUser/:id') // Request to delete an user by id. Delete the information stored in database of an user.
-  deleteUser(@Param('id', ParseIntPipe) id: number, @Req() req) {
-    const requesterId = req.user.id;
-    return this.appService.deleteUser(id, requesterId);
+  @Delete('deleteUser/:id')
+  deleteUser(@Param('id', ParseIntPipe) id: number) {
+    return this.appService.deleteUser(id);
   }
 }

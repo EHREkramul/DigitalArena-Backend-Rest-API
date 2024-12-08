@@ -9,11 +9,7 @@ import {
   OneToMany,
   BeforeInsert,
 } from 'typeorm';
-
-export enum UserRole {
-  BUYER = 'BUYER',
-  ADMIN = 'ADMIN',
-}
+import { Role } from 'src/auth/enums/role.enum';
 
 @Entity({ name: 'users' })
 export class User {
@@ -35,8 +31,8 @@ export class User {
   @Column({ type: 'varchar', length: 15, nullable: true }) // Optional phone number.
   phone?: string;
 
-  @Column({ type: 'enum', enum: UserRole, default: UserRole.BUYER }) // Enum for user roles.
-  role: UserRole;
+  @Column({ type: 'enum', enum: Role, default: Role.BUYER }) // Enum for user roles.
+  role: Role;
 
   @Column({ type: 'boolean', default: true }) // Active state of the user.
   isActive: boolean;

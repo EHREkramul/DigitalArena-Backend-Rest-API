@@ -6,6 +6,7 @@ import { AuthJwtPayload } from './types/auth-jwtPayload';
 import refreshJwtConfig from './config/refresh-jwt.config';
 import { ConfigType } from '@nestjs/config';
 import * as argon2 from 'argon2';
+import { CurrentUser } from './types/current-user';
 
 @Injectable()
 export class AuthService {
@@ -35,6 +36,9 @@ export class AuthService {
 
     const hashedRefreshToken = await argon2.hash(refreshToken);
     await this.userService.updateHashedRefreshToken(userId, hashedRefreshToken);
+
+    this.userService.updateLastLogin(userId); // Update last login date
+
     return {
       id: userId,
       accessToken,
@@ -68,12 +72,11 @@ export class AuthService {
   }
 
   async validateRefreshToken(userId: number, refreshToken: string) {
-    const user = await this.userService.getUserById(userId);
+    const user = await this.userService.getUserRefreshTokenFromDB(userId);
+    console.log(user);
 
     if (!user || !user.refreshToken)
-      throw new UnauthorizedException(
-        `Invalid refresh token`,
-      );
+      throw new UnauthorizedException(`Invalid refresh token`);
 
     const isRefreshTokenMatching = await argon2.verify(
       user.refreshToken,
@@ -88,5 +91,17 @@ export class AuthService {
 
   async logout(userId: number) {
     return await this.userService.updateHashedRefreshToken(userId, null);
+  }
+
+  async validateJwtUser(userId: number) {
+    const user = await this.userService.getUserById(userId);
+
+    if (!user) throw new UnauthorizedException(`User not found`);
+
+    const currentUser: CurrentUser = {
+      id: user.id,
+      role: user.role,
+    };
+    return currentUser;
   }
 }

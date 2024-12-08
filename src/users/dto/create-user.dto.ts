@@ -7,7 +7,7 @@ import {
   IsPhoneNumber,
   IsNotEmpty,
 } from 'class-validator';
-import { UserRole } from 'src/entities/user.entity';
+import { Role } from 'src/auth/enums/role.enum';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -28,8 +28,8 @@ export class CreateUserDto {
   @IsPhoneNumber('BD')
   phone?: string;
 
-  @IsEnum(UserRole)
-  role: UserRole;
+  @IsEnum(Role)
+  role: Role;
 
   @IsOptional()
   @IsBoolean()

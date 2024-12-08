@@ -1,64 +1,70 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  NotFoundException,
+  Injectable,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
 import { Repository } from 'typeorm';
-import { NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { LoginUserDto } from './dto/login-user.dto';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User) // Injecting User Repository.
+    @InjectRepository(User)
     private userRepository: Repository<User>,
   ) {}
 
-  //////// GET REQUESTS ////////
+  //////////////////////////////////////// GET REQUESTS ////////////////////////////////////////
 
-  // Returns all users from db. All the information stored in database of users.
-  async getUsers() {
-    return await this.userRepository.find(); // Fetch all users from db.
+  async getAllUsers() {
+    return await this.userRepository.find();
   }
 
-  // Returns individual user by id from db. All the information stored in database of an user.
+  // Get User by Id.
   async getUserById(id: number) {
     if (!id) {
-      throw new NotFoundException(`Id is required`); // Throw exception if id is not provided
+      throw new NotFoundException(`Id is required`);
     }
-    const user = await this.userRepository.findOne({ where: { id } }); // Fetch user by id from db.
+
+    const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
-      throw new NotFoundException(`User with id ${id} not found`); // Throw exception if user not found.
+      throw new NotFoundException(`User with id ${id} not found`);
     }
-    return user; // Return user if found.
+    return user;
   }
 
-  // Returns individual user by email from db. All the information stored in database of an user.
+  // Get User by Email.
   async getUserByEmail(email: string) {
     if (!email) {
-      throw new NotFoundException(`Email is required`); // Throw exception if email is not provided
+      throw new NotFoundException(`Email is required`);
     }
-    const user = await this.userRepository.findOne({ where: { email } }); // Fetch user by email from db.
+
+    const user = await this.userRepository.findOne({ where: { email } });
     if (!user) {
-      throw new NotFoundException(`User with email ${email} not found`); // Throw exception if user not found.
+      throw new NotFoundException(`User with email ${email} not found`);
     }
-    return user; // Return user if found.
+    return user;
   }
 
-  // Returns individual user by username from db. All the information stored in database of an user.
+  // Get User by Id.
   async getUserByUsername(username: string) {
-    const user = await this.userRepository.findOne({ where: { username } }); // Fetch user by username from db.
+    const user = await this.userRepository.findOne({ where: { username } });
     if (!user) {
-      throw new NotFoundException(`User with username ${username} not found`); // Throw exception if user not found.
+      throw new NotFoundException(`User with username ${username} not found`);
     }
-    return user; // Return user if found.
+    return user;
   }
 
-  //////// POST REQUESTS ////////
+  //////////////////////////////////////// POST REQUESTS ////////////////////////////////////////
 
-  // Creates a new user and store in db.
+  // Create an User.
   async createUser(createUserDto: CreateUserDto) {
-    // Check if username contains only small letters and numbers.
     if (!createUserDto.username.match(/^[a-z0-9]+$/)) {
-      throw new NotFoundException(
+      throw new BadRequestException(
         `Username can only contain small letters and numbers`,
       );
     }
@@ -69,41 +75,97 @@ export class UsersService {
         where: { email: createUserDto.email },
       })
     ) {
-      throw new NotFoundException(
+      throw new ConflictException(
         `User with email ${createUserDto.email} already exists`,
       );
-    } else if (
+    }
+
+    if (
       await this.userRepository.findOne({
         where: { username: createUserDto.username },
       })
     ) {
-      throw new NotFoundException(
+      throw new ConflictException(
         `User with username ${createUserDto.username} already exists`,
       );
     }
 
-    const user = this.userRepository.create(createUserDto); // Create a new user.
-    await this.userRepository.save(user); // Save the user in db.
-    return user; // Return the user.
+    const user = this.userRepository.create(createUserDto);
+    await this.userRepository.save(user);
+    return user;
   }
 
-  //////// PATCH REQUESTS ////////
-  
-  // Updates an existing user in db.
-  async updateUser(id: number, updateUserDto: CreateUserDto) {
-    // Check if the user exists.
+  // Get User by Email or Username.
+  async getUserByDynamicCredential(identifier: string) {
+    // Get user by email or username.
+    const user = await this.userRepository.findOne({
+      where: [{ email: identifier }, { username: identifier }],
+    });
+
+    return user;
+  }
+
+  //////////////////////////////////////// PATCH REQUESTS ////////////////////////////////////////
+
+  // Update an User Info.
+  async updateUser(id: number, updateUserDto: UpdateUserDto) {
+    // Check if the user exists or not with id.
+    if (!(await this.userRepository.findOne({ where: { id } }))) {
+      throw new NotFoundException(`User with id ${id} not found`); // Throw exception if user not found.
+    }
+
+    // Check if the user already exists.
     if (
-      !(await this.userRepository.findOne({
+      updateUserDto.email !== undefined &&
+      (await this.userRepository.findOne({
         where: { email: updateUserDto.email },
       }))
     ) {
-      throw new NotFoundException(
-        `User with email ${updateUserDto.email} not found`,
+      throw new ConflictException(
+        `User with email ${updateUserDto.email} already exists`,
       );
     }
 
-    const user = this.userRepository.create(updateUserDto); // Create a new user.
-    await this.userRepository.save(user); // Save the user in db.
-    return user; // Return the user.
+    if (
+      updateUserDto.username !== undefined &&
+      (await this.userRepository.findOne({
+        where: { username: updateUserDto.username },
+      }))
+    ) {
+      throw new ConflictException(
+        `User with username ${updateUserDto.username} already exists`,
+      );
+    }
+
+    if (
+      updateUserDto.username !== undefined &&
+      !updateUserDto.username.match(/^[a-z0-9]+$/)
+    ) {
+      throw new BadRequestException(
+        `Username can only contain small letters and numbers`,
+      );
+    }
+
+    const result = this.userRepository.update(id, updateUserDto); // Update the user.
+    return result;
+  }
+
+  //////////////////////////////////////// DELETE REQUESTS ////////////////////////////////////////
+
+  // Delete an User by id.
+  async deleteUser(id: number) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    // Check if the user exists or not with id.
+    if (!user) {
+      throw new NotFoundException(`User with id ${id} not found`);
+    }
+
+    // Check if id is not ADMIN.
+    if (user.role === 'ADMIN') {
+      throw new BadRequestException(`Admin users cannot be deleted`);
+    }
+
+    const result = await this.userRepository.delete(id);
+    return result;
   }
 }

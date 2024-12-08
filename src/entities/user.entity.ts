@@ -1,4 +1,5 @@
 import { Order } from 'src/entities/order.entity';
+import * as bcrypt from 'bcrypt';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -6,6 +7,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  BeforeInsert,
 } from 'typeorm';
 
 export enum UserRole {
@@ -36,11 +38,16 @@ export class User {
   @Column({ type: 'boolean', default: true }) // Active state of the user.
   isActive: boolean;
 
-  @Column({ type: 'varchar', length: 255, nullable: true }) // Path to profile image.
+  @Column({
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+    default: 'avatar.jpg',
+  }) // Path to profile image.
   profileImage?: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true }) // Full name of the user.
-  fullName: string;
+  fullName?: string;
 
   @CreateDateColumn({ type: 'timestamp' }) // Timestamp when the user is created. It's set automatically.
   createdAt: Date;
@@ -54,4 +61,29 @@ export class User {
   // Add the One-to-Many relationship
   @OneToMany(() => Order, (order) => order.user)
   orders: Order[];
+
+  @BeforeInsert()
+  emailToLowerCase() {
+    this.email = this.email.toLowerCase();
+  }
+
+  @BeforeInsert()
+  usernameToLowerCase() {
+    this.username = this.username.toLowerCase();
+  }
+
+  @BeforeInsert()
+  fullNameToTitleCase() {
+    if(this.fullName) {
+      this.fullName = this.fullName
+      .split(' ')
+      .map((word) => word[0].toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+    }
+  }
+
+  @BeforeInsert()
+  hashPassword() {
+    this.password = bcrypt.hashSync(this.password, 10);
+  }
 }

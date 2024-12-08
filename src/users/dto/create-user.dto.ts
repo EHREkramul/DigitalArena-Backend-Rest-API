@@ -10,17 +10,17 @@ import {
 import { UserRole } from 'src/entities/user.entity';
 
 export class CreateUserDto {
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   username: string;
 
-  @IsEmail()
-  @IsString()
   @IsNotEmpty()
+  @IsString()
+  @IsEmail()
   email: string;
 
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   password: string;
 
   @IsOptional()
@@ -39,7 +39,11 @@ export class CreateUserDto {
   @IsString()
   profileImage?: string;
 
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  fullName: string;
+  fullName?: string;
+
+  @IsOptional()
+  @IsString()
+  lastLoginAt?: Date;
 }

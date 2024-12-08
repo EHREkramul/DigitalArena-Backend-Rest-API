@@ -32,9 +32,21 @@ import { Coupon } from './entities/coupon.entity';
 import { OrderItem } from './entities/order-item.entity';
 import { CartItem } from './entities/cart-item.entity';
 import { Files } from './entities/files.entity';
+import { ConfigModule } from '@nestjs/config';
+import dbConfig from './config/db.config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot( // for environment variables in .env file
+      {
+        isGlobal: true,
+        expandVariables: true,
+        load: [dbConfig],
+      }
+    ),
+    TypeOrmModule.forRootAsync({
+      useFactory: dbConfig,
+    }), // for database connection
     TypeOrmModule.forFeature([
       User,
       Order,
@@ -53,16 +65,6 @@ import { Files } from './entities/files.entity';
       CartItem,
       Files,
     ]),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: '3639',
-      database: 'digital_arena',
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true,
-    }),
     AuthModule,
     UsersModule,
     ProductsModule,

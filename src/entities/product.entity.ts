@@ -38,7 +38,7 @@ export class Product {
   @JoinColumn({ name: 'subcategory_id' })
   subcategory: Subcategory;
 
-  @Column({ type: 'varchar', length: 255, nullable: true }) // URL of product image.
+  @Column({ type: 'varchar', length: 255, nullable: true }) // file name.
   image_url?: string;
 
   @Column({ type: 'boolean', default: true }) // Active state of the product.

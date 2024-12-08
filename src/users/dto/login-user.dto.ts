@@ -1,11 +1,11 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
 export class LoginUserDto {
-  @IsString()
   @IsNotEmpty()
-  username: string;
+  @IsString()
+  identifier: string; // Can be either email or username.
 
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   password: string;
 }

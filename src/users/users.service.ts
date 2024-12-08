@@ -89,20 +89,12 @@ export class UsersService {
     return user;
   }
 
-  /*// Get User by Email.
+  // Get User by Email.
   async getUserByEmail(email: string) {
-    if (!email) {
-      throw new NotFoundException(`Email is required`);
-    }
-
-    const user = await this.userRepository.findOne({ where: { email } });
-    if (!user) {
-      throw new NotFoundException(`User with email ${email} not found`);
-    }
-    return user;
+    return await this.userRepository.findOne({ where: { email } });
   }
 
-  // Get User by username.
+  /*// Get User by username.
   async getUserByUsername(username: string) {
     const user = await this.userRepository.findOne({ where: { username } });
     if (!user) {
@@ -249,17 +241,23 @@ export class UsersService {
       throw new NotFoundException(`User not found`);
     }
 
-    if(!await compare(updatePasswordDto.oldPassword, user.password)) {
+    if (!(await compare(updatePasswordDto.oldPassword, user.password))) {
       throw new UnauthorizedException('Old password does not match');
     }
 
-    if(updatePasswordDto.oldPassword === updatePasswordDto.newPassword) {
-      throw new BadRequestException('New password cannot be same as old password');
+    if (updatePasswordDto.oldPassword === updatePasswordDto.newPassword) {
+      throw new BadRequestException(
+        'New password cannot be same as old password',
+      );
     }
-    
-    const isPasswordValid = this.validatePassword(updatePasswordDto.newPassword);
+
+    const isPasswordValid = this.validatePassword(
+      updatePasswordDto.newPassword,
+    );
     if (!isPasswordValid) {
-      throw new BadRequestException('Password must be at least 8 characters long and contain at least one small, Capital & special character.');
+      throw new BadRequestException(
+        'Password must be at least 8 characters long and contain at least one small, Capital & special character.',
+      );
     }
 
     return this.userRepository.update(id, {
@@ -271,7 +269,7 @@ export class UsersService {
     const minLength = 8;
     const regex = /^(?=.*[!@#$%^&*(),.?":{}|<>])(?=.*[A-Z])(?=.*[a-z]).{8,}$/;
 
-    if ((!password || password.length < minLength) || (!regex.test(password))) {
+    if (!password || password.length < minLength || !regex.test(password)) {
       return false;
     }
 

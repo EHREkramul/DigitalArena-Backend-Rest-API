@@ -1,4 +1,9 @@
-import { BadRequestException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcrypt';
 import { UsersService } from 'src/users/users.service';
@@ -7,6 +12,7 @@ import refreshJwtConfig from './config/refresh-jwt.config';
 import { ConfigType } from '@nestjs/config';
 import * as argon2 from 'argon2';
 import { CurrentUser } from './types/current-user';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -102,5 +108,13 @@ export class AuthService {
       role: user.role,
     };
     return currentUser;
+  }
+
+  async validateGoogleUser(googleUser: CreateUserDto) {
+    const user = await this.userService.getUserByEmail(googleUser.email);
+
+    if (user) return user;
+
+    return await this.userService.createUser(googleUser);
   }
 }

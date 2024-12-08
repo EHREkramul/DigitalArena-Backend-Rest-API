@@ -9,7 +9,6 @@ import {
   ValidationPipe,
   Delete,
   Req,
-  BadRequestException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -68,7 +67,10 @@ export class UsersController {
 
   /////////////////////////////// Update User Password ///////////////////////////////
   @Patch('updatePassword')
-  updatePassword(@Req() req, @Body(ValidationPipe) updatePasswordDto: UpdatePasswordDto) {
+  updatePassword(
+    @Req() req,
+    @Body(ValidationPipe) updatePasswordDto: UpdatePasswordDto,
+  ) {
     return this.appService.updatePassword(req.user.id, updatePasswordDto);
   }
 }

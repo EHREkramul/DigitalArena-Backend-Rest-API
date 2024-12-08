@@ -15,6 +15,8 @@ import refreshJwtConfig from './config/refresh-jwt.config';
 import { RefreshJwtStrategy } from './strategies/refresh.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth/jwt-auth.guard';
 import { RolesGuard } from './guards/roles/roles.guard';
+import googleOauthConfig from './config/google-oauth.config';
+import { GoogleStrategy } from './strategies/google.strategy';
 
 @Module({
   imports: [
@@ -22,6 +24,7 @@ import { RolesGuard } from './guards/roles/roles.guard';
     JwtModule.registerAsync(jwtConfig.asProvider()),
     ConfigModule.forFeature(jwtConfig),
     ConfigModule.forFeature(refreshJwtConfig),
+    ConfigModule.forFeature(googleOauthConfig),
   ],
   controllers: [AuthController],
   providers: [
@@ -30,6 +33,7 @@ import { RolesGuard } from './guards/roles/roles.guard';
     LocalStrategy,
     JwtStrategy,
     RefreshJwtStrategy,
+    GoogleStrategy,
     {
       provide: APP_FILTER,
       useClass: EntityPropertyNotFoundExceptionFilter,

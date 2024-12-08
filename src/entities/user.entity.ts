@@ -48,6 +48,9 @@ export class User {
   @Column({ type: 'varchar', length: 255, nullable: true }) // Full name of the user.
   fullName?: string;
 
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 }) // Precision for total digits and scale for decimal places
+  balance: number;
+
   @CreateDateColumn({ type: 'timestamp' }) // Timestamp when the user is created. It's set automatically.
   createdAt: Date;
 

@@ -1,4 +1,4 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcrypt';
 import { UsersService } from 'src/users/users.service';
@@ -73,7 +73,6 @@ export class AuthService {
 
   async validateRefreshToken(userId: number, refreshToken: string) {
     const user = await this.userService.getUserRefreshTokenFromDB(userId);
-    console.log(user);
 
     if (!user || !user.refreshToken)
       throw new UnauthorizedException(`Invalid refresh token`);

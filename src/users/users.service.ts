@@ -10,7 +10,9 @@ import { User } from '../entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { LoginUserDto } from './dto/login-user.dto';
+import { UpdatePasswordDto } from './dto/update-password.dto';
+import { compare } from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -21,17 +23,7 @@ export class UsersService {
 
   //////////////////////////////////////// GET REQUESTS ////////////////////////////////////////
 
-  async getAllUsers(id: number) {
-    const user = await this.userRepository.findOne({ where: { id } });
-    // Check if the user exists or not with id.
-    if (!user) {
-      throw new NotFoundException(`User not found`); // Throw exception if user not found.
-    }
-
-    if (user.role !== 'ADMIN') {
-      throw new UnauthorizedException(`Only Admin users can access this route`);
-    }
-
+  async getAllUsers() {
     return await this.userRepository.find({
       select: [
         'id',
@@ -42,6 +34,7 @@ export class UsersService {
         'role',
         'isActive',
         'profileImage',
+        'balance',
         'createdAt',
         'updatedAt',
         'lastLoginAt',
@@ -67,6 +60,7 @@ export class UsersService {
         'isActive',
         'profileImage',
         'fullName',
+        'balance',
         'createdAt',
         'updatedAt',
         'lastLoginAt',
@@ -150,7 +144,9 @@ export class UsersService {
 
     const user = this.userRepository.create(createUserDto);
     await this.userRepository.save(user);
-    return user;
+
+    const { password, refreshToken, ...result } = user;
+    return result;
   }
 
   // Get User by Email or Username.
@@ -172,6 +168,9 @@ export class UsersService {
 
   // Update an User Info.
   async updateUser(id: number, updateUserDto: UpdateUserDto) {
+    if (!id) {
+      throw new BadRequestException(`Id is required`);
+    }
     // Check if the user exists or not with id.
     if (
       id !== undefined &&
@@ -241,5 +240,41 @@ export class UsersService {
       { id: userId },
       { refreshToken: hashedRefreshToken },
     );
+  }
+
+  /////////////////////////////// Update User Password ///////////////////////////////
+  async updatePassword(id: number, updatePasswordDto: UpdatePasswordDto) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`User not found`);
+    }
+
+    if(!await compare(updatePasswordDto.oldPassword, user.password)) {
+      throw new UnauthorizedException('Old password does not match');
+    }
+
+    if(updatePasswordDto.oldPassword === updatePasswordDto.newPassword) {
+      throw new BadRequestException('New password cannot be same as old password');
+    }
+    
+    const isPasswordValid = this.validatePassword(updatePasswordDto.newPassword);
+    if (!isPasswordValid) {
+      throw new BadRequestException('Password must be at least 8 characters long and contain at least one small, Capital & special character.');
+    }
+
+    return this.userRepository.update(id, {
+      password: bcrypt.hashSync(updatePasswordDto.newPassword, 10),
+    });
+  }
+
+  validatePassword(password: string): boolean {
+    const minLength = 8;
+    const regex = /^(?=.*[!@#$%^&*(),.?":{}|<>])(?=.*[A-Z])(?=.*[a-z]).{8,}$/;
+
+    if ((!password || password.length < minLength) || (!regex.test(password))) {
+      return false;
+    }
+
+    return true;
   }
 }

@@ -27,6 +27,7 @@ export class AuthController {
   }
 
   /////////////////////////////// Refresh Token Authentication ///////////////////////////////
+  @Public() // Refresh token auth will applied not jwt auth.
   @UseGuards(RefreshAuthGuard)
   @Post('refreshToken')
   refreshToken(@Req() req) {
@@ -34,7 +35,6 @@ export class AuthController {
   }
 
   /////////////////////////////// User Logout Authentication ///////////////////////////////
-  @UseGuards(JwtAuthGuard)
   @Post('logout')
   async logout(@Req() req) {
     this.authService.logout(req.user.id);

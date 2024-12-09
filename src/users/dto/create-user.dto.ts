@@ -6,7 +6,7 @@ import {
   IsBoolean,
   IsPhoneNumber,
   IsNotEmpty,
-  IsDateString,
+  IsStrongPassword,
 } from 'class-validator';
 import { Role } from 'src/auth/enums/role.enum';
 
@@ -22,6 +22,7 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @IsString()
+  @IsStrongPassword()
   password: string;
 
   @IsOptional()

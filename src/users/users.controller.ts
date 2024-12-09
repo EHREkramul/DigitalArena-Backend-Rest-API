@@ -16,7 +16,6 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/auth/enums/role.enum';
 import { Public } from 'src/auth/decorators/public.decorator';
-import { UpdatePasswordDto } from './dto/update-password.dto';
 
 @Controller('users')
 export class UsersController {
@@ -29,10 +28,10 @@ export class UsersController {
     return this.appService.getAllUsers();
   }
 
-  /////////////////////////////// GET User By ID ///////////////////////////////
+  /////////////////////////////// GET User Profile By ID ///////////////////////////////
   @Get('getUserById')
   getUserById(@Req() req) {
-    return this.appService.getUserById(req.user.id);
+    return this.appService.getUserProfile(req.user.id);
   }
 
   /*@Get('getUserByEmail') // Request to get individual user by email. Get all the information stored in database of an user.
@@ -63,14 +62,5 @@ export class UsersController {
   @Delete('deleteUser/:id')
   deleteUser(@Param('id', ParseIntPipe) id: number) {
     return this.appService.deleteUser(id);
-  }
-
-  /////////////////////////////// Update User Password ///////////////////////////////
-  @Patch('updatePassword')
-  updatePassword(
-    @Req() req,
-    @Body(ValidationPipe) updatePasswordDto: UpdatePasswordDto,
-  ) {
-    return this.appService.updatePassword(req.user.id, updatePasswordDto);
   }
 }

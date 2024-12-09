@@ -4,6 +4,13 @@
 # Include only README.md files (keeping them tracked in Git)
 !assets/**/README.md
 
+# Ignore everything in User_Profile_Images
+assets/User_Profile_Images/*
+
+!assets/User_Profile_Images/
+!assets/User_Profile_Images/arena.png
+!assets/User_Profile_Images/avatar.jpg
+
 
 # compiled output
 /dist

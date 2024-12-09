@@ -34,6 +34,7 @@ import { CartItem } from './entities/cart-item.entity';
 import { Files } from './entities/files.entity';
 import { ConfigModule } from '@nestjs/config';
 import dbConfig from './config/db.config';
+import { Verification } from './entities/verification.entity';
 
 @Module({
   imports: [
@@ -65,6 +66,7 @@ import dbConfig from './config/db.config';
       OrderItem,
       CartItem,
       Files,
+      Verification,
     ]),
     AuthModule,
     UsersModule,

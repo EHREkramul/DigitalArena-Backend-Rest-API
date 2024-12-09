@@ -3,16 +3,12 @@ import {
   NotFoundException,
   Injectable,
   BadRequestException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UpdatePasswordDto } from './dto/update-password.dto';
-import { compare } from 'bcrypt';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -43,8 +39,8 @@ export class UsersService {
     });
   }
 
-  // Get User by Id.
-  async getUserById(id: number) {
+  // Get User Profile by Id. Do not provide sensitive information like password, refreshToken.
+  async getUserProfile(id: number) {
     if (!id) {
       throw new BadRequestException(`Id is required`);
     }
@@ -70,28 +66,6 @@ export class UsersService {
       throw new NotFoundException(`User with id ${id} not found`);
     }
     return user;
-  }
-
-  // Get users refresh token.
-  async getUserRefreshTokenFromDB(id: number) {
-    if (!id) {
-      throw new BadRequestException(`Id is required`);
-    }
-
-    const user = await this.userRepository.findOne({
-      where: { id },
-      select: ['id', 'refreshToken'],
-    });
-
-    if (!user) {
-      throw new NotFoundException(`User with id ${id} not found`);
-    }
-    return user;
-  }
-
-  // Get User by Email.
-  async getUserByEmail(email: string) {
-    return await this.userRepository.findOne({ where: { email } });
   }
 
   /*// Get User by username.
@@ -137,23 +111,9 @@ export class UsersService {
     const user = this.userRepository.create(createUserDto);
     await this.userRepository.save(user);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, refreshToken, ...result } = user;
     return result;
-  }
-
-  // Get User by Email or Username.
-  async getUserByDynamicCredential(identifier: string) {
-    // Get user by email or username.
-    const user = await this.userRepository.findOne({
-      where: [{ email: identifier }, { username: identifier }],
-    });
-
-    return user;
-  }
-
-  // Update Last Login.
-  async updateLastLogin(id: number) {
-    await this.userRepository.update(id, { lastLoginAt: new Date() });
   }
 
   //////////////////////////////////////// PATCH REQUESTS ////////////////////////////////////////
@@ -234,45 +194,58 @@ export class UsersService {
     );
   }
 
-  /////////////////////////////// Update User Password ///////////////////////////////
-  async updatePassword(id: number, updatePasswordDto: UpdatePasswordDto) {
-    const user = await this.userRepository.findOne({ where: { id } });
-    if (!user) {
-      throw new NotFoundException(`User not found`);
+  // fetch complete user including all sensitive information.
+  async getUserByIdWithCredential(id: number) {
+    if (!id) {
+      throw new BadRequestException(`Id is required`);
     }
 
-    if (!(await compare(updatePasswordDto.oldPassword, user.password))) {
-      throw new UnauthorizedException('Old password does not match');
-    }
-
-    if (updatePasswordDto.oldPassword === updatePasswordDto.newPassword) {
-      throw new BadRequestException(
-        'New password cannot be same as old password',
-      );
-    }
-
-    const isPasswordValid = this.validatePassword(
-      updatePasswordDto.newPassword,
-    );
-    if (!isPasswordValid) {
-      throw new BadRequestException(
-        'Password must be at least 8 characters long and contain at least one small, Capital & special character.',
-      );
-    }
-
-    return this.userRepository.update(id, {
-      password: bcrypt.hashSync(updatePasswordDto.newPassword, 10),
+    return await this.userRepository.findOne({
+      where: { id },
     });
   }
 
-  validatePassword(password: string): boolean {
-    const minLength = 8;
-    const regex = /^(?=.*[!@#$%^&*(),.?":{}|<>])(?=.*[A-Z])(?=.*[a-z]).{8,}$/;
-
-    if (!password || password.length < minLength || !regex.test(password)) {
-      return false;
+  // Get users refresh token.
+  async getUserRefreshTokenFromDB(id: number) {
+    if (!id) {
+      throw new BadRequestException(`Id is required`);
     }
 
-    return true;
+    const user = await this.userRepository.findOne({
+      where: { id },
+      select: ['id', 'refreshToken'],
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with id ${id} not found`);
+    }
+    return user;
+  }
+
+  // Get User by Email.
+  async getUserByEmail(email: string) {
+    return await this.userRepository.findOne({ where: { email } });
+  }
+
+  // Get User by Email or Username.
+  async getUserByDynamicCredential(identifier: string) {
+    // Get user by email or username.
+    const user = await this.userRepository.findOne({
+      where: [{ email: identifier }, { username: identifier }],
+    });
+
+    return user;
+  }
+
+  // Update Last Login.
+  async updateLastLogin(id: number) {
+    await this.userRepository.update(id, { lastLoginAt: new Date() });
+  }
+
+  // Change User Password.
+  async changePassword(id: number, hashedPassword: string) {
+    return this.userRepository.update(id, {
+      password: hashedPassword,
+    });
   }
 }

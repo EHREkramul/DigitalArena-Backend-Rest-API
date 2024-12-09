@@ -10,6 +10,7 @@ import {
   BeforeInsert,
 } from 'typeorm';
 import { Role } from 'src/auth/enums/role.enum';
+import { Verification } from './verification.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -63,6 +64,9 @@ export class User {
   // Add the One-to-Many relationship
   @OneToMany(() => Order, (order) => order.user)
   orders: Order[];
+
+  @OneToMany(() => Verification, (verification) => verification.user)
+  verifications: Verification[];
 
   @BeforeInsert()
   emailToLowerCase() {

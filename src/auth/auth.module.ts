@@ -7,6 +7,7 @@ import { UsersService } from 'src/users/users.service';
 import { LocalStrategy } from './strategies/local.strategy';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
+import { Verification } from 'src/entities/verification.entity';
 import { JwtModule } from '@nestjs/jwt';
 import jwtConfig from './config/jwt.config';
 import { ConfigModule } from '@nestjs/config';
@@ -16,20 +17,24 @@ import { RefreshJwtStrategy } from './strategies/refresh.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth/jwt-auth.guard';
 import { RolesGuard } from './guards/roles/roles.guard';
 import googleOauthConfig from './config/google-oauth.config';
+import emailConfig from './config/email.config';
 import { GoogleStrategy } from './strategies/google.strategy';
+import { MailService } from './services/mail.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Verification]),
     JwtModule.registerAsync(jwtConfig.asProvider()),
     ConfigModule.forFeature(jwtConfig),
     ConfigModule.forFeature(refreshJwtConfig),
     ConfigModule.forFeature(googleOauthConfig),
+    ConfigModule.forFeature(emailConfig),
   ],
   controllers: [AuthController],
   providers: [
     AuthService,
     UsersService,
+    MailService,
     LocalStrategy,
     JwtStrategy,
     RefreshJwtStrategy,

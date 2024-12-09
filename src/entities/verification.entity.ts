@@ -6,7 +6,7 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 import { User } from './user.entity';
-import { VerificationType } from 'src/auth/enums/verification.enum';
+import { VerificationType } from 'src/auth/enums/verification-type.enum';
 
 @Entity({ name: 'verifications' })
 export class Verification {

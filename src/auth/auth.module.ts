@@ -20,6 +20,8 @@ import googleOauthConfig from './config/google-oauth.config';
 import emailConfig from './config/email.config';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { MailService } from './services/mail.service';
+import { SmsService } from './sms/sms.service';
+import { SmsModule } from './sms/sms.module';
 
 @Module({
   imports: [
@@ -29,12 +31,14 @@ import { MailService } from './services/mail.service';
     ConfigModule.forFeature(refreshJwtConfig),
     ConfigModule.forFeature(googleOauthConfig),
     ConfigModule.forFeature(emailConfig),
+    SmsModule,
   ],
   controllers: [AuthController],
   providers: [
     AuthService,
     UsersService,
     MailService,
+    SmsService,
     LocalStrategy,
     JwtStrategy,
     RefreshJwtStrategy,
@@ -51,6 +55,7 @@ import { MailService } from './services/mail.service';
       provide: APP_GUARD,
       useClass: RolesGuard, // @UseGuards(RolesGuard) in controller applied to all routes in all Project modules.
     },
+    SmsService,
   ],
 })
 export class AuthModule {}

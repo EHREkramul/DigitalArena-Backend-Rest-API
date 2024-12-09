@@ -9,12 +9,14 @@ import { User } from '../entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { MailService } from 'src/auth/services/mail.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    private mailService: MailService,
   ) {}
 
   //////////////////////////////////////// GET REQUESTS ////////////////////////////////////////
@@ -113,6 +115,7 @@ export class UsersService {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, refreshToken, ...result } = user;
+    this.mailService.sendWelcomeEmail(result.email, result.fullName);
     return result;
   }
 

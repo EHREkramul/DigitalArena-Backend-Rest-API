@@ -21,9 +21,13 @@ import { nanoid } from 'nanoid';
 import { Verification } from 'src/entities/verification.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { VerificationType } from './enums/verification.enum';
+import { VerificationType } from './enums/verification-type.enum';
 import { MailService } from './services/mail.service';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { VerificationMethod } from './enums/verification-method.enum';
+import { SmsService } from './sms/sms.service';
+import { generateOtp } from './utility/otp.util';
+import { maskEmail } from './utility/email-mask.util';
 
 @Injectable()
 export class AuthService {
@@ -31,6 +35,7 @@ export class AuthService {
     private userService: UsersService,
     private jwtService: JwtService,
     private mailService: MailService,
+    private smsService: SmsService,
     @Inject(refreshJwtConfig.KEY)
     private refreshTokenConfig: ConfigType<typeof refreshJwtConfig>,
     @InjectRepository(Verification)
@@ -168,65 +173,136 @@ export class AuthService {
       throw new NotFoundException(`User not found`);
     }
 
-    const resetToken = nanoid(64);
-    const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + 1); // Expires in 1 hour
+    /////////////////// Verification Method: EMAIL
 
-    const verificationData = this.verificationRepository.create({
-      type: VerificationType.PASSWORD_RESET_TOKEN,
-      tokenOrOtp: resetToken,
-      user: user,
-      expiresAt: expiresAt,
-    });
-    await this.verificationRepository.save(verificationData);
+    if (forgotPasswordDto.verificationMethod === VerificationMethod.EMAIL) {
+      const resetToken = nanoid(64);
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + 1); // Expires in 1 hour
 
-    this.mailService.sendPasswordResetEmail(
-      user.email,
-      user.fullName,
-      resetToken,
-    );
+      const verificationData = this.verificationRepository.create({
+        type: VerificationType.PASSWORD_RESET_TOKEN,
+        tokenOrOtp: resetToken,
+        user: user,
+        expiresAt: expiresAt,
+      });
+      await this.verificationRepository.save(verificationData);
 
-    const maskedEmail = this.maskEmail(user.email);
-    return {
-      message: `Password reset link sent to your email ${maskedEmail}`,
-    };
-  }
+      const response = await this.mailService.sendPasswordResetEmail(
+        user.email,
+        user.fullName,
+        resetToken,
+      );
 
-  maskEmail(email: string): string {
-    const [localPart, domain] = email.split('@');
-    const maskedLocalPart =
-      localPart.substring(0, 3) + '***' + localPart.slice(-1);
-    return `${maskedLocalPart}@${domain}`;
+      const maskedEmail = maskEmail(user.email);
+      if (response.accepted.length > 0 && response.rejected.length === 0) {
+        return {
+          message: `Password reset link sent to your email ${maskedEmail}`,
+          resetToken: resetToken,
+        };
+      } else {
+        return {
+          message: `Failed to sent email to your email ${maskedEmail}`,
+        };
+      }
+    }
+
+    /////////////////// Verification Method: SMS
+    else if (forgotPasswordDto.verificationMethod === VerificationMethod.SMS) {
+      const otp = generateOtp();
+      const expiresAt = new Date();
+      expiresAt.setMinutes(expiresAt.getMinutes() + 2); // Expires in 2 minutes
+
+      const verificationData = this.verificationRepository.create({
+        type: VerificationType.OTP_VERIFICATION,
+        tokenOrOtp: otp,
+        user: user,
+        expiresAt: expiresAt,
+      });
+      await this.verificationRepository.save(verificationData);
+
+      const response = await this.smsService.sendOtp(user.phone, otp); // Send OTP to user phone
+
+      const maskedPhone = `********${user.phone.slice(-3)}`;
+
+      if (response.success) {
+        return {
+          message: `OTP Successfully sent to your phone number ${maskedPhone}`,
+        };
+      } else {
+        return {
+          message: `Failed to send OTP to your phone number ${maskedPhone}`,
+        };
+      }
+    } else {
+      throw new BadRequestException('Invalid verification method');
+    }
   }
 
   /////////////////////////////// Reset Password ///////////////////////////////
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
-    const verificationObj = await this.verificationRepository.findOne({
-      where: {
-        tokenOrOtp: resetPasswordDto.resetToken,
-        type: VerificationType.PASSWORD_RESET_TOKEN,
-      },
-      relations: ['user'], // It will include user object in the response. Access by verificationObj.user
-    });
+    // Verification Method: EMAIL
+    if (resetPasswordDto.verificationMethod === VerificationMethod.EMAIL) {
+      const verificationObj = await this.verificationRepository.findOne({
+        where: {
+          tokenOrOtp: resetPasswordDto.resetTokenOrOTP,
+          type: VerificationType.PASSWORD_RESET_TOKEN,
+        },
+        relations: ['user'], // It will include user object in the response. Access by verificationObj.user
+      });
 
-    if (!verificationObj) {
-      throw new UnauthorizedException('Invalid or expired Link');
+      if (!verificationObj) {
+        throw new UnauthorizedException('Password Reset Link Expired');
+      }
+
+      const user = verificationObj.user;
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      if (verificationObj.expiresAt < new Date()) {
+        throw new BadRequestException('Password reset Link expired');
+      }
+
+      const hashedPassword = bcrypt.hashSync(resetPasswordDto.newPassword, 10);
+      await this.userService.changePassword(user.id, hashedPassword);
+
+      await this.verificationRepository.delete(verificationObj.id);
+
+      return { message: 'Password reset successful' };
     }
 
-    const user = verificationObj.user;
-    if (!user) {
-      throw new NotFoundException('User not found');
+    // Verification Method: SMS
+    else if (resetPasswordDto.verificationMethod === VerificationMethod.SMS) {
+      const verificationObj = await this.verificationRepository.findOne({
+        where: {
+          tokenOrOtp: resetPasswordDto.resetTokenOrOTP,
+          type: VerificationType.OTP_VERIFICATION,
+        },
+        relations: ['user'], // It will include user object in the response. Access by verificationObj.user
+      });
+
+      if (!verificationObj) {
+        throw new UnauthorizedException('Invalid or Expired OTP');
+      }
+
+      const user = verificationObj.user;
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      if (verificationObj.expiresAt < new Date()) {
+        throw new BadRequestException('OTP expired');
+      }
+
+      const hashedPassword = bcrypt.hashSync(resetPasswordDto.newPassword, 10);
+      await this.userService.changePassword(user.id, hashedPassword);
+
+      await this.verificationRepository.delete(verificationObj.id);
+
+      return { message: 'Password reset successful' };
+    } else {
+      throw new BadRequestException('Invalid verification method');
     }
-
-    if (verificationObj.expiresAt < new Date()) {
-      throw new BadRequestException('Token has expired');
-    }
-
-    const hashedPassword = bcrypt.hashSync(resetPasswordDto.newPassword, 10);
-    await this.userService.changePassword(user.id, hashedPassword);
-
-    await this.verificationRepository.delete(verificationObj.id);
-
-    return { message: 'Password reset successful' };
   }
 }

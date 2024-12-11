@@ -3,6 +3,8 @@ import {
   NotFoundException,
   Injectable,
   BadRequestException,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
@@ -10,6 +12,10 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { MailService } from 'src/auth/services/mail.service';
+import { clearDirectory } from 'src/auth/utility/clear-directory.util';
+import { Response } from 'express';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class UsersService {
@@ -53,11 +59,11 @@ export class UsersService {
         'id',
         'username',
         'email',
+        'fullName',
         'phone',
         'role',
         'isActive',
         'profileImage',
-        'fullName',
         'balance',
         'createdAt',
         'updatedAt',
@@ -250,5 +256,90 @@ export class UsersService {
     return this.userRepository.update(id, {
       password: hashedPassword,
     });
+  }
+
+  // Update User Profile Image.
+  async updateProfileImage(userId: number, profileImageFileName: string) {
+    if (!(await this.userRepository.findOne({ where: { id: userId } }))) {
+      throw new NotFoundException(`User not found`);
+    }
+
+    const result = await this.userRepository.update(userId, {
+      profileImage: profileImageFileName,
+    });
+
+    const uploadPath = path.join(
+      __dirname,
+      '..',
+      '..',
+      'assets',
+      'user_profile_image',
+      `user_${userId}`,
+    );
+
+    // Something went wrong while updating the user.
+    if (result.affected === 0) {
+      clearDirectory(
+        uploadPath,
+        (await this.userRepository.findOne({ where: { id: userId } }))
+          .profileImage,
+        'profileImage-',
+      );
+      throw new NotFoundException(`User not found`);
+    }
+
+    clearDirectory(uploadPath, profileImageFileName, 'profileImage-'); // Delete old files starting with "profileImage-" except the new file
+
+    return {
+      message: `Profile Image Updated Successfully`,
+      userAffected: result.affected,
+    };
+  }
+
+  // Get User Profile Image.
+  async getUserProfileImage(userId: number, res: any) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException(`User not found`);
+    }
+
+    let imagePath = path.join(
+      __dirname,
+      '..',
+      '..',
+      'assets',
+      'user_profile_image',
+      `user_${userId}`,
+      `${user.profileImage}`,
+    );
+
+    if (user.profileImage === 'avatar.jpg') {
+      imagePath = path.join(
+        __dirname,
+        '..',
+        '..',
+        'assets',
+        'user_profile_image',
+        `${user.profileImage}`,
+      );
+    }
+
+    // Check if the image exists
+    if (!fs.existsSync(imagePath)) {
+      throw new NotFoundException(`Image file not found`);
+    }
+
+    // Stream the image file to the client
+    res.sendFile(imagePath, (err) => {
+      if (err) {
+        throw new HttpException(
+          'Unable to retrieve the profile image',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    });
+    return {
+      message: `Profile Image Sent Successfully`,
+    };
   }
 }

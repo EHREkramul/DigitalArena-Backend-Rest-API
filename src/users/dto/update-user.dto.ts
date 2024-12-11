@@ -2,13 +2,11 @@ import {
   IsString,
   IsEmail,
   IsOptional,
-  IsEnum,
   IsBoolean,
   IsPhoneNumber,
   IsNotEmpty,
   IsNumber,
 } from 'class-validator';
-import { Role } from 'src/auth/enums/role.enum';
 
 export class UpdateUserDto {
   @IsOptional()
@@ -28,12 +26,8 @@ export class UpdateUserDto {
   phone?: string;
 
   @IsOptional()
-  @IsEnum(Role, { message: 'Role must be either BUYER or ADMIN' }) // Optional with a specific validation message
-  role?: Role = Role.BUYER; // Default to BUYER
-
-  @IsOptional()
   @IsBoolean()
-  isActive?: boolean = true; // Default to true
+  isActive?: boolean; // Default to true
 
   @IsOptional()
   @IsNumber()

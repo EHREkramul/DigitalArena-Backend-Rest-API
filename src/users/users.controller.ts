@@ -63,4 +63,6 @@ export class UsersController {
   deleteUser(@Param('id', ParseIntPipe) id: number) {
     return this.appService.deleteUser(id);
   }
+
+  /////////////////////////////// Update User Profile Image ///////////////////////////////
 }

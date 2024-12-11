@@ -41,9 +41,5 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsString()
-  profileImage?: string = 'avatar.jpg'; // Default avatar image
-
-  @IsOptional()
-  @IsString()
   fullName?: string;
 }

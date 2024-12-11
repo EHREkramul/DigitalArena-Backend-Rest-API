@@ -16,6 +16,12 @@ export class Category {
   @Column({ type: 'varchar', length: 100, unique: true, nullable: false }) // Unique and non-nullable category name.
   name: string;
 
+  @Column({ type: 'text', nullable: true }) // Description can be null.
+  description: string;
+
+  @Column({ type: 'text', nullable: true }) // Image URL can be null.
+  categoryImage: string;
+
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }) // Automatically sets creation timestamp.
   created_at: Date;
 

@@ -17,6 +17,12 @@ export class Subcategory {
   @Column({ type: 'varchar', length: 100, nullable: false }) // Subcategory name.
   name: string;
 
+  @Column({ type: 'text', nullable: true }) // Description can be null.
+  description: string;
+
+  @Column({ type: 'text', nullable: true }) // Image URL can be null.
+  subcategoryImage: string;
+
   @ManyToOne(() => Category, (category) => category.subcategories, {
     nullable: false,
   }) // Many subcategories belong to one category.

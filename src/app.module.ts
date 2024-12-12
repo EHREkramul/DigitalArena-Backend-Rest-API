@@ -33,8 +33,9 @@ import { OrderItem } from './entities/order-item.entity';
 import { CartItem } from './entities/cart-item.entity';
 import { Files } from './entities/files.entity';
 import { ConfigModule } from '@nestjs/config';
-import dbConfig from './config/db.config';
 import { Verification } from './entities/verification.entity';
+import dbConfig from './config/db.config';
+import smsConfig from './auth/config/sms.config';
 
 @Module({
   imports: [
@@ -43,7 +44,7 @@ import { Verification } from './entities/verification.entity';
       {
         isGlobal: true,
         expandVariables: true,
-        load: [dbConfig],
+        load: [dbConfig, smsConfig],
       },
     ),
     TypeOrmModule.forRootAsync({

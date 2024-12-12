@@ -13,7 +13,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { MailService } from 'src/auth/services/mail.service';
 import { clearDirectory } from 'src/auth/utility/clear-directory.util';
-import { Response } from 'express';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -48,7 +47,7 @@ export class UsersService {
   }
 
   // Get User Profile by Id. Do not provide sensitive information like password, refreshToken.
-  async getUserProfile(id: number) {
+  async getUserProfileInfo(id: number) {
     if (!id) {
       throw new BadRequestException(`Id is required`);
     }

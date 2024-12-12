@@ -64,7 +64,7 @@ export class MailService {
       attachments: [
         {
           filename: 'digital-arena-logo.png',
-          path: './assets/User_Profile_Images/digital-arena-logo.png',
+          path: './assets/user_profile_image/digital-arena-logo.png',
           cid: 'logo', // Same CID value as in the HTML content
         },
       ],
@@ -122,7 +122,7 @@ export class MailService {
       attachments: [
         {
           filename: 'digital-arena-logo.png',
-          path: './assets/User_Profile_Images/digital-arena-logo.png',
+          path: './assets/user_profile_image/digital-arena-logo.png',
           cid: 'logo', // Same CID value as in the HTML content
         },
       ],

@@ -15,8 +15,12 @@ export class SmsService {
     this.senderId = this.configService.get<string>('smsSenderId');
   }
 
-  async sendOtp(phoneNumber: string, otp: string): Promise<any> {
-    const message = `Your Digital Arena Reset Password OTP is ${otp}.\nThis code will expire in 2 minutes.\n\nPlease do not share this OTP with anyone.`;
+  async sendOtp(
+    phoneNumber: string,
+    otp: string,
+    fullName: string,
+  ): Promise<any> {
+    const message = `Dear ${fullName.split(' ')[0]},\nYour Digital Arena Reset Password OTP is ${otp}.\nThis code will expire in 2 minutes.\n\nPlease do not share this OTP with anyone.`;
     const params = {
       api_key: this.apiKey,
       senderid: this.senderId,

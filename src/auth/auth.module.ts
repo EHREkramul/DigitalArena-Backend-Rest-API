@@ -20,8 +20,7 @@ import googleOauthConfig from './config/google-oauth.config';
 import emailConfig from './config/email.config';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { MailService } from './services/mail.service';
-import { SmsService } from './sms/sms.service';
-import { SmsModule } from './sms/sms.module';
+import { SmsService } from './services/sms.service';
 
 @Module({
   imports: [
@@ -31,7 +30,6 @@ import { SmsModule } from './sms/sms.module';
     ConfigModule.forFeature(refreshJwtConfig),
     ConfigModule.forFeature(googleOauthConfig),
     ConfigModule.forFeature(emailConfig),
-    SmsModule,
   ],
   controllers: [AuthController],
   providers: [

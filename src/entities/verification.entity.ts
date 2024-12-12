@@ -19,6 +19,10 @@ export class Verification {
   @Column({ type: 'varchar', length: 255 }) // Token or OTP value
   tokenOrOtp: string;
 
+  // userID is the foreign key to the User entity
+  @Column() // Foreign key to the User entity
+  userId: number;
+
   @ManyToOne(() => User, (user) => user.verifications, { onDelete: 'CASCADE' }) // One user can have multiple verifications
   user: User;
 

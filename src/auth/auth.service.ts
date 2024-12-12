@@ -25,7 +25,7 @@ import { VerificationType } from './enums/verification-type.enum';
 import { MailService } from './services/mail.service';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { VerificationMethod } from './enums/verification-method.enum';
-import { SmsService } from './sms/sms.service';
+import { SmsService } from './services/sms.service';
 import { generateOtp } from './utility/otp.util';
 import { maskEmail } from './utility/email-mask.util';
 
@@ -118,7 +118,7 @@ export class AuthService {
   }
 
   async validateJwtUser(userId: number) {
-    const user = await this.userService.getUserProfile(userId);
+    const user = await this.userService.getUserProfileInfo(userId);
 
     if (!user) throw new UnauthorizedException(`User not found`);
 
@@ -180,6 +180,12 @@ export class AuthService {
       const expiresAt = new Date();
       expiresAt.setHours(expiresAt.getHours() + 1); // Expires in 1 hour
 
+      // Check if user has same type of verification data saved in database. If yes, then delete it.
+      await this.verificationRepository.delete({
+        type: VerificationType.PASSWORD_RESET_TOKEN,
+        userId: user.id,
+      });
+
       const verificationData = this.verificationRepository.create({
         type: VerificationType.PASSWORD_RESET_TOKEN,
         tokenOrOtp: resetToken,
@@ -213,15 +219,27 @@ export class AuthService {
       const expiresAt = new Date();
       expiresAt.setMinutes(expiresAt.getMinutes() + 2); // Expires in 2 minutes
 
+      // Check if user has same type of verification data saved in database. If yes, then delete it.
+      // Check if user has same type of verification data saved in database. If yes, then delete it.
+      await this.verificationRepository.delete({
+        type: VerificationType.PASSWORD_RESET_OTP,
+        userId: user.id,
+      });
+
+      // Save new OTP verification data
       const verificationData = this.verificationRepository.create({
-        type: VerificationType.OTP_VERIFICATION,
+        type: VerificationType.PASSWORD_RESET_OTP,
         tokenOrOtp: otp,
         user: user,
         expiresAt: expiresAt,
       });
       await this.verificationRepository.save(verificationData);
 
-      const response = await this.smsService.sendOtp(user.phone, otp); // Send OTP to user phone
+      const response = await this.smsService.sendOtp(
+        user.phone,
+        otp,
+        user.fullName,
+      ); // Send OTP to user phone
 
       const maskedPhone = `********${user.phone.slice(-3)}`;
 
@@ -277,7 +295,7 @@ export class AuthService {
       const verificationObj = await this.verificationRepository.findOne({
         where: {
           tokenOrOtp: resetPasswordDto.resetTokenOrOTP,
-          type: VerificationType.OTP_VERIFICATION,
+          type: VerificationType.PASSWORD_RESET_OTP,
         },
         relations: ['user'], // It will include user object in the response. Access by verificationObj.user
       });

@@ -40,9 +40,9 @@ export class UsersController {
   }
 
   /////////////////////////////// GET User Profile ///////////////////////////////
-  @Get('getUserProfile')
+  @Get('getUserProfileInfo')
   getUserProfile(@Req() req: any) {
-    return this.usersService.getUserProfile(req.user.id);
+    return this.usersService.getUserProfileInfo(req.user.id);
   }
 
   /////////////////////////////// GET User Profile Image ///////////////////////////////

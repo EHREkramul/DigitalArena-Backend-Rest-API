@@ -15,7 +15,7 @@ export class Subcategory {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 100, nullable: false }) // Subcategory name.
+  @Column({ type: 'varchar', length: 100, nullable: false, unique: true }) // Subcategory name.
   name: string;
 
   @Column({ type: 'text', nullable: true }) // Description can be null.

@@ -235,6 +235,10 @@ export class AuthService {
       });
       await this.verificationRepository.save(verificationData);
 
+      // If phone number is null or empty or undefined then throw error
+      if (!user.phone) {
+        throw new BadRequestException('Phone number not found');
+      }
       const response = await this.smsService.sendOtp(
         user.phone,
         otp,

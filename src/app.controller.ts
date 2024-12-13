@@ -7,7 +7,7 @@ export class AppController {
 
   @Get()
   HELLOAPI(): string {
-    // Welcome
+    // Welcome API
     return this.appService.HELLOAPI();
   }
 }

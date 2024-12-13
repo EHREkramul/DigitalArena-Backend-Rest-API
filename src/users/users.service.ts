@@ -11,13 +11,10 @@ import { User } from '../entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-<<<<<<< HEAD
-=======
 import { MailService } from 'src/auth/services/mail.service';
 import { clearDirectory } from 'src/auth/utility/clear-directory.util';
 import * as fs from 'fs';
 import * as path from 'path';
->>>>>>> 2ce6cd9bdc18535ecdda71ab405f1ae3dc48bbc6
 
 @Injectable()
 export class UsersService {
@@ -127,13 +124,6 @@ export class UsersService {
     return result;
   }
 
-<<<<<<< HEAD
-  //////// PATCH REQUESTS ////////
-
-  // Updates an existing user in db.
-  async updateUser(id: number, updateUserDto: UpdateUserDto) {
-    // Check if the user exists.
-=======
   //////////////////////////////////////// PATCH REQUESTS ////////////////////////////////////////
 
   // Update an User Info.
@@ -142,7 +132,6 @@ export class UsersService {
       throw new BadRequestException(`Id is required`);
     }
     // Check if the user exists or not with id.
->>>>>>> 2ce6cd9bdc18535ecdda71ab405f1ae3dc48bbc6
     if (
       id !== undefined &&
       !(await this.userRepository.findOne({ where: { id } }))

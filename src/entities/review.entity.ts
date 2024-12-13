@@ -2,59 +2,41 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
-import {
-  IsNotEmpty,
-  IsString,
-  IsNumber,
-  Min,
-  Max,
-  MaxLength,
-  IsOptional,
-} from 'class-validator';
-import { Product } from './product.entity';
 import { User } from './user.entity';
+import { Product } from './product.entity';
+import { ReviewStatus } from 'src/auth/enums/reviewStatus.enum';
 
 @Entity({ name: 'reviews' })
 export class Review {
-  // Auto-generated primary key
   @PrimaryGeneratedColumn()
   id: number;
 
-  //Review content
-  @Column({ type: 'text' })
-  @IsNotEmpty()
-  @IsString()
-  @MaxLength(1000) // Prevent long reviews (optional)
-  content: string;
-
-  //Rating of the product
-  @Column({ type: 'decimal', precision: 3, scale: 2, nullable: true })
-  @IsOptional() // Rating is optional
-  @IsNumber()
-  @Min(0)
-  @Max(5)
+  @Column({ type: 'smallint' }) // Rating of the product, between 1-5.
   rating: number;
 
-  //Review date
-  @CreateDateColumn({ type: 'timestamp' })
-  created_at: Date;
+  @Column({ type: 'text', nullable: true }) // Optional comment with the review.
+  comment?: string;
 
-  //Last update
-  @UpdateDateColumn({ type: 'timestamp' })
-  updated_at: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
-  // Many reviews belong to one product
-  @ManyToOne(() => Product, (product) => product.reviews, { nullable: false })
-  @JoinColumn({ name: 'product_id' })
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @Column({ type: 'enum', enum: ReviewStatus, default: ReviewStatus.PENDING }) // Review status (Pending, Approved, Rejected).
+  reviewStatus: ReviewStatus;
+
+  ////////// RELATIONSHIPS //////////
+  @ManyToOne(() => User, (user) => user.reviews, { nullable: false }) // Many reviews can belong to one user.
+  @JoinColumn()
+  user: User;
+
+  @ManyToOne(() => Product, (product) => product.reviews, { nullable: false }) // Many reviews can belong to one product.
+  @JoinColumn()
   product: Product;
-
-  // Many reviews belong to one user
-  @ManyToOne(() => User, (user) => user.reviews, { nullable: false })
-  @JoinColumn({ name: 'user_id' }) // Foreign key for the Review author
-  user: User; // Reference to the author (user)
 }

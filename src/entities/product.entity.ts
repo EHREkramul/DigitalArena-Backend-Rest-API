@@ -4,117 +4,94 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
   OneToMany,
   ManyToMany,
   JoinTable,
 } from 'typeorm';
-import {
-  IsNotEmpty,
-  IsString,
-  IsNumber,
-  IsPositive,
-  IsBoolean,
-  IsOptional,
-  IsDate,
-  MaxLength,
-  Min,
-  Max,
-} from 'class-validator';
+import { Category } from './category.entity';
+import { Subcategory } from '../entities/subcategory.entity';
 import { Files } from './files.entity';
+import { WishlistItem } from './wishlist-item.entity';
+import { CartItem } from './cart-item.entity';
+import { DownloadPermission } from './download-permission.entity';
+import { OrderItem } from './order-item.entity';
 import { Review } from './review.entity';
 import { Tag } from './tag.entity';
 
 @Entity({ name: 'products' })
 export class Product {
-  //Auto-generated primary key
   @PrimaryGeneratedColumn()
   id: number;
 
-  //Name of the product
-  @Column({ type: 'varchar', length: 255 })
-  @IsNotEmpty()
-  @IsString()
-  @MaxLength(255)
+  @Column({ type: 'varchar', length: 255 }) // Name/Title of the product.
   name: string;
 
-  //Description of the product
-  @Column({ type: 'text' })
-  @IsNotEmpty()
-  @IsString()
+  @Column({ type: 'text' }) // Detailed description.
   description: string;
 
-  //Price of the product
   @Column({ type: 'decimal', precision: 10, scale: 2 })
-  @IsNotEmpty()
-  @IsNumber()
-  @IsPositive()
   price: number;
 
-  //Image URL of the product
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  @IsOptional()
-  @IsString()
-  @MaxLength(255)
-  image_url?: string;
+  @Column({ type: 'varchar', length: 255, nullable: true }) // Thumbnail Image path.
+  thumbnailImage?: string;
 
-  //Is the product active?
-  @Column({ type: 'boolean', default: true })
-  @IsNotEmpty()
-  @IsBoolean()
-  is_active: boolean;
+  @Column({ type: 'boolean', default: true }) // Active state of the product.
+  isActive: boolean;
 
-  //Creation timestamp
-  @CreateDateColumn({ type: 'timestamp' })
-  created_at: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
-  //Update timestamp
-  @UpdateDateColumn({ type: 'timestamp' })
-  updated_at: Date;
+  @UpdateDateColumn()
+  updatedAt: Date;
 
-  //Preview URL of the product
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  @IsOptional()
-  @IsString()
-  @MaxLength(255)
-  preview_url?: string;
+  @Column({ type: 'decimal', precision: 3, scale: 2, default: 0 }) // Average rating out of 5 (example-3.5 out of 5).
+  ratingAvg: number;
 
-  //Number of views of the product
-  @Column({ type: 'int', default: 0 })
-  @IsNumber()
-  @Min(0)
-  views: number;
+  @Column({ type: 'int', default: 0 }) // Total review on the product (example-Total review: 13).
+  ratingCount: number;
 
-  //Number of downloads of the product
-  @Column({ type: 'int', default: 0 })
-  @IsNumber()
-  @Min(0)
-  downloads: number;
+  @Column({ type: 'varchar', length: 255, nullable: true }) // Preview URL (If Required).
+  previewUrl?: string;
 
-  //Number of likes of the product
-  @Column({ type: 'int', default: 0 })
-  @IsNumber()
-  @Min(0)
-  likes: number;
+  ////////// RELATIONSHIPS //////////
+  @OneToMany(() => WishlistItem, (wishlistItem) => wishlistItem.product, {
+    cascade: true,
+  }) // One product can be in many wishlists.
+  wishlistItems: WishlistItem[];
 
-  //Published date of the product
-  @Column({ type: 'timestamp', nullable: true })
-  @IsOptional()
-  @IsDate()
-  published_date: Date;
+  @OneToMany(() => CartItem, (cartItem) => cartItem.product, { cascade: true }) // One product can be in many carts.
+  cartItems: CartItem[];
 
-  //Average rating of the product
-  @Column({ type: 'decimal', precision: 3, scale: 2, default: 0 })
-  @IsNumber()
-  @Min(0)
-  @Max(5)
-  rating_avg: number;
+  @OneToMany(() => Files, (file) => file.product, { cascade: true }) // One product can have many files.
+  files: File[];
 
-  //Related files of the product
-  @OneToMany(() => Files, (file) => file.product)
-  files: Files[];
+  @ManyToOne(() => Category, (category) => category.products, {
+    nullable: false,
+  }) // Many products can belong to one category.
+  @JoinColumn()
+  category: Category;
 
-  //Reviews of the product
-  @OneToMany(() => Review, (review) => review.product)
+  @ManyToOne(() => Subcategory, (subcategory) => subcategory.products, {
+    nullable: true,
+  }) // Many products can belong to one subcategory.
+  @JoinColumn()
+  subcategory: Subcategory;
+
+  @OneToMany(
+    () => DownloadPermission,
+    (downloadPermission) => downloadPermission.product,
+    { cascade: true },
+  ) // One product can have many download permissions for many users.
+  downloadPermissions: DownloadPermission[];
+
+  @OneToMany(() => OrderItem, (orderItem) => orderItem.product, {
+    cascade: true,
+  }) // One product can be in many orders.
+  orderItems: OrderItem[];
+
+  @OneToMany(() => Review, (review) => review.product, { cascade: true }) // One product can have many reviews.
   reviews: Review[];
 
   // Tags associated with the product

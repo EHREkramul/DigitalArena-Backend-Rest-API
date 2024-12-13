@@ -21,6 +21,7 @@ export class Tag {
   @MaxLength(255)
   name: string;
 
+  ////////// RELATIONSHIPS //////////
   // Many-to-Many relationship with Product
   @ManyToMany(() => Product, (product) => product.tags)
   products: Product[];

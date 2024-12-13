@@ -19,17 +19,17 @@ import {
 import { Product } from './product.entity';
 import { User } from './user.entity';
 
-@Entity({ name: 'comments' })
-export class Comment {
+@Entity({ name: 'reviews' })
+export class Review {
   // Auto-generated primary key
   @PrimaryGeneratedColumn()
   id: number;
 
-  //Comment content
+  //Review content
   @Column({ type: 'text' })
   @IsNotEmpty()
   @IsString()
-  @MaxLength(1000) // Prevent long comments (optional)
+  @MaxLength(1000) // Prevent long reviews (optional)
   content: string;
 
   //Rating of the product
@@ -40,7 +40,7 @@ export class Comment {
   @Max(5)
   rating: number;
 
-  //Comment date
+  //Review date
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 
@@ -48,13 +48,13 @@ export class Comment {
   @UpdateDateColumn({ type: 'timestamp' })
   updated_at: Date;
 
-  // Many comments belong to one product
-  @ManyToOne(() => Product, (product) => product.comments, { nullable: false })
+  // Many reviews belong to one product
+  @ManyToOne(() => Product, (product) => product.reviews, { nullable: false })
   @JoinColumn({ name: 'product_id' })
   product: Product;
 
-  // Many comments belong to one user
-  @ManyToOne(() => User, (user) => user.comments, { nullable: false })
-  @JoinColumn({ name: 'user_id' }) // Foreign key for the comment author
+  // Many reviews belong to one user
+  @ManyToOne(() => User, (user) => user.reviews, { nullable: false })
+  @JoinColumn({ name: 'user_id' }) // Foreign key for the Review author
   user: User; // Reference to the author (user)
 }

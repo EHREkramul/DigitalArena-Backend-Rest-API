@@ -21,7 +21,7 @@ import {
   Max,
 } from 'class-validator';
 import { Files } from './files.entity';
-import { Comment } from './comment.entity';
+import { Review } from './review.entity';
 import { Tag } from './tag.entity';
 
 @Entity({ name: 'products' })
@@ -113,9 +113,9 @@ export class Product {
   @OneToMany(() => Files, (file) => file.product)
   files: Files[];
 
-  //Comments of the product
-  @OneToMany(() => Comment, (comment) => comment.product)
-  comments: Comment[];
+  //Reviews of the product
+  @OneToMany(() => Review, (review) => review.product)
+  reviews: Review[];
 
   // Tags associated with the product
   @ManyToMany(() => Tag, (tag) => tag.products)

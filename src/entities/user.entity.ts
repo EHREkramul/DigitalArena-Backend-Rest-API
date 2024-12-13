@@ -10,7 +10,7 @@ import {
   BeforeInsert,
   OneToOne,
 } from 'typeorm';
-import { Comment } from './comment.entity';
+import { Review } from './review.entity';
 
 export enum UserRole {
   BUYER = 'BUYER',
@@ -110,8 +110,8 @@ export class User {
   orders: Order[];
 
   // One user can have many comments
-  @OneToMany(() => Comment, (comment) => comment.user, { cascade: true })
-  comments: Comment[];
+  @OneToMany(() => Review, (review) => review.user, { cascade: true })
+  reviews: Review[];
   ////////// Before inserting a new user, the email, username, and full name are normalized.
   @BeforeInsert()
   emailToLowerCase() {

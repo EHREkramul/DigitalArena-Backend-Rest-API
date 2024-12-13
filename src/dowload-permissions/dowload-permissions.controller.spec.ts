@@ -9,7 +9,9 @@ describe('DowloadPermissionsController', () => {
       controllers: [DowloadPermissionsController],
     }).compile();
 
-    controller = module.get<DowloadPermissionsController>(DowloadPermissionsController);
+    controller = module.get<DowloadPermissionsController>(
+      DowloadPermissionsController,
+    );
   });
 
   it('should be defined', () => {

@@ -11,12 +11,8 @@ import { User } from './user.entity';
 
 @Entity({ name: 'notifications' })
 export class Notification {
-  @PrimaryGeneratedColumn() // Unique identifier for the notification. It's auto-generated number.
+  @PrimaryGeneratedColumn()
   id: number;
-
-  @ManyToOne(() => User, (user) => user.id, { nullable: false }) // Each notification is linked to a user (recipient).
-  @JoinColumn({ name: 'user_id' })
-  user: User;
 
   @Column({ type: 'varchar', length: 255 }) // Title of the notification.
   title: string;
@@ -30,13 +26,14 @@ export class Notification {
   @Column({ type: 'varchar', length: 50 }) // Status of the notification (e.g., "unread", "read").
   status: string;
 
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }) // Auto-set creation timestamp.
-  created_at: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
-  @UpdateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP',
-  }) // Auto-set update timestamp.
-  updated_at: Date;
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  ////////// RELATIONSHIPS //////////
+  @ManyToOne(() => User, (user) => user.id, { nullable: false }) // Many notifications belong to one user.
+  @JoinColumn()
+  user: User;
 }

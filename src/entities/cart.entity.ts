@@ -1,30 +1,31 @@
 import {
   Entity,
   PrimaryGeneratedColumn,
-  ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToOne,
+  JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { User } from './user.entity';
+import { CartItem } from './cart-item.entity';
 
 @Entity({ name: 'cart' })
 export class Cart {
-  @PrimaryGeneratedColumn() // Unique identifier for the cart. It's auto-generated number.
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.id, {
-    nullable: false,
-    onDelete: 'CASCADE',
-  }) // One cart belongs to one user.
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  ////////// RELATIONSHIPS //////////
+  @OneToOne(() => User, (user) => user.cart) // Each cart is linked to one user.
+  @JoinColumn()
   user: User;
 
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }) // Auto-set creation timestamp.
-  created_at: Date;
-
-  @UpdateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP',
-  }) // Auto-set update timestamp.
-  updated_at: Date;
+  @OneToMany(() => CartItem, (cartItem) => cartItem.cart, { cascade: true }) // Each cart has multiple cart items.
+  cartItems: CartItem[];
 }

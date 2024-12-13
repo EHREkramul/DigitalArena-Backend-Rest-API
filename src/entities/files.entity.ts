@@ -10,21 +10,22 @@ import { Product } from './product.entity';
 
 @Entity({ name: 'files' })
 export class Files {
-  @PrimaryGeneratedColumn() // Unique identifier for the file. It's auto-generated number.
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Product, (product) => product.files, { nullable: false }) // Many files belong to one product.
-  product: Product;
-
-  @Column({ type: 'varchar', length: 255, nullable: false }) // File name.
-  file_name: string;
+  @Column({ type: 'varchar', length: 255, nullable: false }) // File name (example: businessSlide.ppt).
+  fileName: string;
 
   @Column({ type: 'varchar', length: 50, nullable: false }) // File type/extension.
-  file_type: string;
+  fileType: string;
 
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }) // Automatically sets creation timestamp.
-  created_at: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
-  @UpdateDateColumn({ type: 'timestamp', nullable: true }) // Automatically updates timestamp on modification.
-  updated_at: Date;
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  ////////// RELATIONSHIPS //////////
+  @ManyToOne(() => Product, (product) => product.files, { nullable: false }) // Many files belong to one product.
+  product: Product;
 }

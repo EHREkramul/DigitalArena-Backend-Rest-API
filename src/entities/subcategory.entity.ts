@@ -5,13 +5,14 @@ import {
   CreateDateColumn,
   ManyToOne,
   OneToMany,
+  JoinColumn,
 } from 'typeorm';
 import { Category } from '../entities/category.entity';
 import { Product } from 'src/entities/product.entity';
 
 @Entity({ name: 'subcategories' })
 export class Subcategory {
-  @PrimaryGeneratedColumn() // Unique identifier for the subcategory. It's auto-generated number.
+  @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ type: 'varchar', length: 100, nullable: false }) // Subcategory name.
@@ -20,17 +21,19 @@ export class Subcategory {
   @Column({ type: 'text', nullable: true }) // Description can be null.
   description: string;
 
-  @Column({ type: 'text', nullable: true }) // Image URL can be null.
+  @Column({ type: 'text', nullable: true }) // Subcategory Thumbnail Image Path.
   subcategoryImage: string;
 
+  @CreateDateColumn()
+  createdAt: Date;
+
+  ////////// RELATIONSHIPS //////////
   @ManyToOne(() => Category, (category) => category.subcategories, {
     nullable: false,
-  }) // Many subcategories belong to one category.
+  }) // Many subcategories can belong to one category.
+  @JoinColumn()
   category: Category;
 
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }) // Automatically sets creation timestamp.
-  created_at: Date;
-
-  @OneToMany(() => Product, (product) => product.subcategory) // One-to-many relationship
+  @OneToMany(() => Product, (product) => product.subcategory) // One subcategory can have many products. || Many products can belong to one subcategory.
   products: Product[];
 }

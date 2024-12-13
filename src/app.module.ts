@@ -7,11 +7,8 @@ import { ProductsModule } from './products/products.module';
 import { OrdersModule } from './orders/orders.module';
 import { CartModule } from './cart/cart.module';
 import { ReviewsModule } from './reviews/reviews.module';
-import { WishlistModule } from './wishlist/wishlist.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { SiteSettingsModule } from './site-settings/site-settings.module';
-import { LogsModule } from './logs/logs.module';
-import { DownloadsModule } from './downloads/downloads.module';
 import { CategoriesModule } from './categories/categories.module';
 import { SubcategoriesModule } from './subcategories/subcategories.module';
 import { CouponsModule } from './coupons/coupons.module';
@@ -21,11 +18,11 @@ import { Order } from './entities/order.entity';
 import { Product } from './entities/product.entity';
 import { Cart } from './entities/cart.entity';
 import { Review } from './entities/review.entity';
-import { Wishlist } from './entities/wishlist.entity';
+import { WishlistItem } from './entities/wishlist-item.entity';
 import { Notification } from './entities/notification.entity';
 import { SiteSetting } from './entities/site-setting.entity';
-import { Log } from './entities/log.entity';
-import { Download } from './entities/download.entity';
+import { ActionLog } from './entities/action-log.entity';
+import { DownloadPermission } from './entities/download-permission.entity';
 import { Category } from './entities/category.entity';
 import { Subcategory } from './entities/subcategory.entity';
 import { Coupon } from './entities/coupon.entity';
@@ -34,6 +31,9 @@ import { CartItem } from './entities/cart-item.entity';
 import { Files } from './entities/files.entity';
 import { ConfigModule } from '@nestjs/config';
 import { Verification } from './entities/verification.entity';
+import { WishlistItemsModule } from './wishlist-items/wishlist-items.module';
+import { DowloadPermissionsModule } from './dowload-permissions/dowload-permissions.module';
+import { ActionLogsModule } from './action-logs/action-logs.module';
 import dbConfig from './config/db.config';
 import smsConfig from './auth/config/sms.config';
 
@@ -56,11 +56,11 @@ import smsConfig from './auth/config/sms.config';
       Product,
       Cart,
       Review,
-      Wishlist,
+      WishlistItem,
       Notification,
       SiteSetting,
-      Log,
-      Download,
+      ActionLog,
+      DownloadPermission,
       Category,
       Subcategory,
       Coupon,
@@ -75,14 +75,14 @@ import smsConfig from './auth/config/sms.config';
     OrdersModule,
     CartModule,
     ReviewsModule,
-    WishlistModule,
     NotificationsModule,
     SiteSettingsModule,
-    LogsModule,
-    DownloadsModule,
     CategoriesModule,
     SubcategoriesModule,
     CouponsModule,
+    WishlistItemsModule,
+    DowloadPermissionsModule,
+    ActionLogsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

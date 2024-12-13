@@ -5,35 +5,45 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { User } from './user.entity';
+import { OrderItem } from './order-item.entity';
 
 @Entity({ name: 'orders' })
 export class Order {
-  @PrimaryGeneratedColumn() // Unique identifier for the order. It's auto-generated number.
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.orders, { nullable: false }) // Many orders belong to one user.
-  user: User;
-
-  @Column({ type: 'varchar', length: 50, nullable: false }) // Order status.
+  @Column({ type: 'varchar', length: 50, nullable: false }) // Order status (Pending, Success, Failed).
   status: string;
 
   @Column({ type: 'numeric', precision: 10, scale: 2, nullable: false }) // Total price with precision.
-  total_price: number;
+  totalPrice: number;
 
-  @Column({ type: 'varchar', length: 50, nullable: false }) // Payment status.
-  payment_status: string;
+  @Column({ type: 'varchar', length: 50, nullable: false }) // Payment status (Pending, Success, Failed).
+  paymentStatus: string;
 
   @Column({ type: 'text', nullable: true }) // Billing address.
-  billing_address: string;
-
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }) // Auto-set creation timestamp.
-  created_at: Date;
-
-  @UpdateDateColumn({ type: 'timestamp', nullable: true }) // Auto-set updated timestamp.
-  updated_at: Date;
+  billingAddress: string;
 
   @Column({ type: 'varchar', length: 50, nullable: false }) // Payment method.
-  payment_method: string;
+  paymentMethod: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  ////////// RELATIONSHIPS //////////
+  @ManyToOne(() => User, (user) => user.orders, { nullable: false }) // Many orders belong to one user.
+  @JoinColumn()
+  user: User;
+
+  @OneToMany(() => OrderItem, (orderItems) => orderItems.order, {
+    cascade: true,
+  }) // One order can have many order items.
+  orderItems: OrderItem[];
 }

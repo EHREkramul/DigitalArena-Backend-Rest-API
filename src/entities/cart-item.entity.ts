@@ -12,30 +12,24 @@ import { Product } from './product.entity';
 
 @Entity({ name: 'cart_items' })
 export class CartItem {
-  @PrimaryGeneratedColumn() // Unique identifier for the cart item. It's auto-generated number.
+  @PrimaryGeneratedColumn()
   id: number;
-
-  @ManyToOne(() => Cart, (cart) => cart.id, {
-    nullable: false,
-    onDelete: 'CASCADE',
-  }) // Each cart item is linked to a cart.
-  @JoinColumn({ name: 'cart_id' })
-  cart: Cart;
-
-  @ManyToOne(() => Product, (product) => product.id, { nullable: false }) // Each cart item is linked to a product.
-  @JoinColumn({ name: 'product_id' })
-  product: Product;
 
   @Column({ type: 'numeric' }) // Price of the product when it was added to the cart.
   price: number;
 
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }) // Auto-set creation timestamp.
-  created_at: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
-  @UpdateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP',
-  }) // Auto-set update timestamp.
-  updated_at: Date;
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  ////////// RELATIONSHIPS //////////
+  @ManyToOne(() => Cart, (cart) => cart.cartItems, { nullable: false }) // Each cart item is linked to one cart.
+  @JoinColumn()
+  cart: Cart;
+
+  @ManyToOne(() => Product, (product) => product.id, { nullable: false }) // Each cart item is linked to one product.
+  @JoinColumn()
+  product: Product;
 }

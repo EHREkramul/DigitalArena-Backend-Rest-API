@@ -9,36 +9,34 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 import { Product } from './product.entity';
+import { ReviewStatus } from 'src/auth/enums/reviewStatus.enum';
 
 @Entity({ name: 'reviews' })
 export class Review {
-  @PrimaryGeneratedColumn() // Unique identifier for the review. It's auto-generated number.
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.id, { nullable: false }) // Each review is linked to a user.
-  @JoinColumn({ name: 'user_id' })
-  user: User;
-
-  @ManyToOne(() => Product, (product) => product.id, { nullable: false }) // Each review is linked to a product.
-  @JoinColumn({ name: 'product_id' })
-  product: Product;
-
-  @Column({ type: 'smallint' }) // Rating of the product, typically between 1-5.
+  @Column({ type: 'smallint' }) // Rating of the product, between 1-5.
   rating: number;
 
   @Column({ type: 'text', nullable: true }) // Optional comment with the review.
-  comment: string;
+  comment?: string;
 
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }) // Auto-set creation timestamp.
-  created_at: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
-  @UpdateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP',
-  }) // Auto-set update timestamp.
-  updated_at: Date;
+  @UpdateDateColumn()
+  updatedAt: Date;
 
-  @Column({ type: 'boolean', default: false }) // Indicates if the review is approved.
-  is_approved: boolean;
+  @Column({ type: 'enum', enum: ReviewStatus, default: ReviewStatus.PENDING }) // Review status (Pending, Approved, Rejected).
+  reviewStatus: ReviewStatus;
+
+  ////////// RELATIONSHIPS //////////
+  @ManyToOne(() => User, (user) => user.reviews, { nullable: false }) // Many reviews can belong to one user.
+  @JoinColumn()
+  user: User;
+
+  @ManyToOne(() => Product, (product) => product.reviews, { nullable: false }) // Many reviews can belong to one product.
+  @JoinColumn()
+  product: Product;
 }

@@ -6,40 +6,43 @@ import {
   IsBoolean,
   IsPhoneNumber,
   IsNotEmpty,
+  IsStrongPassword,
 } from 'class-validator';
-import { UserRole } from 'src/entities/user.entity';
+import { Role } from 'src/auth/enums/role.enum';
 
 export class CreateUserDto {
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   username: string;
 
-  @IsEmail()
-  @IsString()
   @IsNotEmpty()
+  @IsString()
+  @IsEmail()
   email: string;
 
-  @IsString()
   @IsNotEmpty()
+  @IsString()
+  @IsStrongPassword()
   password: string;
 
   @IsOptional()
   @IsString()
-  @IsPhoneNumber('BD')
+  @IsPhoneNumber('BD') // Validates phone numbers for Bangladesh
   phone?: string;
 
-  @IsEnum(UserRole)
-  role: UserRole;
+  @IsOptional()
+  @IsEnum(Role, { message: 'Role must be either BUYER or ADMIN' }) // Optional with a specific validation message
+  role?: Role = Role.BUYER; // Default to BUYER
 
   @IsOptional()
   @IsBoolean()
-  isActive: boolean;
+  isActive?: boolean = true; // Default to true
 
   @IsOptional()
   @IsString()
-  profileImage?: string;
+  profileImage?: string = 'avatar.jpg'; // Default avatar image
 
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  fullName: string;
+  fullName?: string;
 }

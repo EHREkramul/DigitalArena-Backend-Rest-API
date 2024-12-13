@@ -12,7 +12,7 @@ import { Product } from './product.entity';
 
 @Entity({ name: 'files' })
 export class Files {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn() // Unique identifier for the file. It's auto-generated number.
   id: number;
 
   // File name

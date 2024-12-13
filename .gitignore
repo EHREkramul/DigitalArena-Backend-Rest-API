@@ -1,9 +1,48 @@
-# Ignore everything in the assets folder and its subfolders
-/assets/*
+# Ignore everything in 3d_model except selected files
+assets/3d_model/*
+!assets/3d_model/
+!assets/3d_model/README.md
+!assets/3d_model/3d-model.jpg
 
-# Include only README.md files (keeping them tracked in Git)
-!assets/**/README.md
+# Ignore everything in ebook except selected files
+assets/ebook/*
+!assets/ebook/
+!assets/ebook/README.md
+!assets/ebook/ebook.jpg
 
+!assets/ebook/subcat-ebook-business-and-career.jpg
+!assets/ebook/subcat-ebook-civil-engineering.jpg
+!assets/ebook/subcat-ebook-machine-learning.jpg
+!assets/ebook/subcat-ebook-self-improvement.jpg
+
+# Ignore everything in graphics_template except selected files
+assets/graphics_template/*
+!assets/graphics_template/
+!assets/graphics_template/README.md
+!assets/graphics_template/graphics-template.jpg
+
+!assets/graphics_template/subcat-graphics-template-business-card.jpg
+!assets/graphics_template/subcat-graphics-template-Id-card.jpg
+!assets/graphics_template/subcat-graphics-template-letterhead.jpg
+!assets/graphics_template/subcat-graphics-template-logo.jpg
+
+# Ignore everything in homepage_carousel except selected files
+assets/homepage_carousel/*
+!assets/homepage_carousel/
+!assets/homepage_carousel/README.md
+
+# Ignore everything in presentation_slide except selected files
+assets/presentation_slide/*
+!assets/presentation_slide/
+!assets/presentation_slide/README.md
+!assets/presentation_slide/presentation-slide.jpg
+
+# Ignore everything in user_profile_image except selected files
+assets/user_profile_image/*
+!assets/user_profile_image/
+!assets/user_profile_image/digital-arena-logo.png
+!assets/user_profile_image/avatar.jpg
+!assets/user_profile_image/README.md
 
 # compiled output
 /dist

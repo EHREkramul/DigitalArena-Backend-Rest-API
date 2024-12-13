@@ -5,6 +5,7 @@ import {
   BadRequestException,
   HttpException,
   HttpStatus,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
@@ -15,10 +16,13 @@ import { MailService } from 'src/auth/services/mail.service';
 import { clearDirectory } from 'src/auth/utility/clear-directory.util';
 import * as fs from 'fs';
 import * as path from 'path';
+import { ActionLogsService } from 'src/action-logs/action-logs.service';
+import { ActionType } from 'src/auth/enums/action-type.enum';
 
 @Injectable()
 export class UsersService {
   constructor(
+    private actionLogsService: ActionLogsService,
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private mailService: MailService,
@@ -121,6 +125,15 @@ export class UsersService {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, refreshToken, ...result } = user;
     this.mailService.sendWelcomeEmail(result.email, result.fullName);
+
+    // Update Action Log
+    const actionLog = {
+      action: ActionType.USER_REGISTER,
+      description: `New User created with id: ${user.id}`,
+      user: user,
+    };
+    await this.actionLogsService.createActionLog(actionLog);
+
     return result;
   }
 
@@ -131,15 +144,14 @@ export class UsersService {
     if (!id) {
       throw new BadRequestException(`Id is required`);
     }
+
+    const user = await this.userRepository.findOne({ where: { id } });
     // Check if the user exists or not with id.
-    if (
-      id !== undefined &&
-      !(await this.userRepository.findOne({ where: { id } }))
-    ) {
+    if (id !== undefined && !user) {
       throw new NotFoundException(`User with id ${id} not found`); // Throw exception if user not found.
     }
 
-    // Check if the user already exists.
+    // Check if Email or Username already exists.
     if (
       updateUserDto.email !== undefined &&
       (await this.userRepository.findOne({
@@ -172,6 +184,14 @@ export class UsersService {
     }
 
     const result = this.userRepository.update(id, updateUserDto); // Update the user.
+
+    // Update Action Log
+    const actionLog = {
+      action: ActionType.USER_UPDATE_PROFILE,
+      description: 'User Profile Information Updated',
+      user: user,
+    };
+    await this.actionLogsService.createActionLog(actionLog);
     return result;
   }
 
@@ -187,10 +207,19 @@ export class UsersService {
 
     // Check if id is not ADMIN.
     if (user.role === 'ADMIN') {
-      throw new BadRequestException(`Admin cannot be deleted`);
+      throw new UnauthorizedException(`Unauthorized to delete this User`);
     }
 
     const result = await this.userRepository.delete(id);
+
+    // Update Action Log
+    const actionLog = {
+      action: ActionType.ADMIN_DELETE_USER,
+      description: 'Admin deleted an User',
+      user: user,
+    };
+    await this.actionLogsService.createActionLog(actionLog);
+
     return result;
   }
 
@@ -259,7 +288,9 @@ export class UsersService {
 
   // Update User Profile Image.
   async updateProfileImage(userId: number, profileImageFileName: string) {
-    if (!(await this.userRepository.findOne({ where: { id: userId } }))) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+
+    if (!user) {
       throw new NotFoundException(`User not found`);
     }
 
@@ -278,16 +309,19 @@ export class UsersService {
 
     // Something went wrong while updating the user.
     if (result.affected === 0) {
-      clearDirectory(
-        uploadPath,
-        (await this.userRepository.findOne({ where: { id: userId } }))
-          .profileImage,
-        'profileImage-',
-      );
+      clearDirectory(uploadPath, user.profileImage, 'profileImage-');
       throw new NotFoundException(`User not found`);
     }
 
     clearDirectory(uploadPath, profileImageFileName, 'profileImage-'); // Delete old files starting with "profileImage-" except the new file
+
+    // Update Action Log
+    const actionLog = {
+      action: ActionType.USER_UPDATE_PROFILE,
+      description: 'User Changed Profile Image',
+      user: user,
+    };
+    await this.actionLogsService.createActionLog(actionLog);
 
     return {
       message: `Profile Image Updated Successfully`,

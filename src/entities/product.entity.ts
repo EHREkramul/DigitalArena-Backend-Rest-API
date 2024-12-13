@@ -52,8 +52,14 @@ export class Product {
   @Column({ type: 'int', default: 0 }) // Total review on the product (example-Total review: 13).
   ratingCount: number;
 
-  @Column({ type: 'varchar', length: 255, nullable: true }) // Preview URL (If Required).
-  previewUrl?: string;
+  @Column({ type: 'int', default: 0 })
+  likeCount: number;
+
+  @Column({ type: 'int', default: 0 })
+  unLikeCount: number;
+
+  @Column({ type: 'int', default: 0 })
+  viewCount: number;
 
   ////////// RELATIONSHIPS //////////
   @OneToMany(() => WishlistItem, (wishlistItem) => wishlistItem.product, {

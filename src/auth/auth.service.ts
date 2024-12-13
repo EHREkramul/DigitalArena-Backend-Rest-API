@@ -28,10 +28,13 @@ import { VerificationMethod } from './enums/verification-method.enum';
 import { SmsService } from './services/sms.service';
 import { generateOtp } from './utility/otp.util';
 import { maskEmail } from './utility/email-mask.util';
+import { ActionType } from './enums/action-type.enum';
+import { ActionLogsService } from 'src/action-logs/action-logs.service';
 
 @Injectable()
 export class AuthService {
   constructor(
+    private actionLogsService: ActionLogsService,
     private userService: UsersService,
     private jwtService: JwtService,
     private mailService: MailService,
@@ -63,6 +66,14 @@ export class AuthService {
     await this.userService.updateHashedRefreshToken(userId, hashedRefreshToken);
 
     this.userService.updateLastLogin(userId); // Update last login date
+
+    // Update Action Log
+    const actionLog = {
+      action: ActionType.USER_LOGIN,
+      description: 'User logged in',
+      user: await this.userService.getUserProfileInfo(userId),
+    };
+    await this.actionLogsService.createActionLog(actionLog);
 
     return {
       id: userId,
@@ -114,6 +125,14 @@ export class AuthService {
   }
 
   async logout(userId: number) {
+    // Update Action Log
+    const actionLog = {
+      action: ActionType.USER_LOGOUT,
+      description: 'User logged out',
+      user: await this.userService.getUserProfileInfo(userId),
+    };
+    await this.actionLogsService.createActionLog(actionLog);
+
     return await this.userService.updateHashedRefreshToken(userId, null);
   }
 
@@ -156,6 +175,15 @@ export class AuthService {
 
     const hashedPassword = bcrypt.hashSync(changePasswordDto.newPassword, 10);
     const result = this.userService.changePassword(id, hashedPassword);
+
+    // Update Action Log
+    const actionLog = {
+      action: ActionType.USER_CHANGE_PASSWORD,
+      description: 'User Changed Password',
+      user: user,
+    };
+    await this.actionLogsService.createActionLog(actionLog);
+
     return {
       message: 'Password changed successfully',
       generatedMaps: (await result).generatedMaps,
@@ -219,7 +247,6 @@ export class AuthService {
       const expiresAt = new Date();
       expiresAt.setMinutes(expiresAt.getMinutes() + 2); // Expires in 2 minutes
 
-      // Check if user has same type of verification data saved in database. If yes, then delete it.
       // Check if user has same type of verification data saved in database. If yes, then delete it.
       await this.verificationRepository.delete({
         type: VerificationType.PASSWORD_RESET_OTP,
@@ -291,6 +318,14 @@ export class AuthService {
 
       await this.verificationRepository.delete(verificationObj.id);
 
+      // Update Action Log
+      const actionLog = {
+        action: ActionType.USER_CHANGE_PASSWORD,
+        description: 'User Reset Password With EMAIL Verification',
+        user: user,
+      };
+      await this.actionLogsService.createActionLog(actionLog);
+
       return { message: 'Password reset successful' };
     }
 
@@ -321,6 +356,14 @@ export class AuthService {
       await this.userService.changePassword(user.id, hashedPassword);
 
       await this.verificationRepository.delete(verificationObj.id);
+
+      // Update Action Log
+      const actionLog = {
+        action: ActionType.USER_CHANGE_PASSWORD,
+        description: 'User Reset Password With SMS Verification',
+        user: user,
+      };
+      await this.actionLogsService.createActionLog(actionLog);
 
       return { message: 'Password reset successful' };
     } else {

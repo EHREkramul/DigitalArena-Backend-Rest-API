@@ -7,17 +7,18 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { User } from './user.entity';
+import { ActionType } from 'src/auth/enums/action-type.enum';
 
 @Entity({ name: 'action_logs' })
 export class ActionLog {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar' }) // Action of user (e.g., "Login", "Purchase").
-  action: string;
+  @Column({ type: 'enum', enum: ActionType, nullable: false }) // Enum for action types.
+  action: ActionType;
 
-  @Column({ type: 'text', nullable: true }) // Optional extra details about the action.
-  details?: string;
+  @Column({ type: 'text', nullable: true }) // Optional extra description about the action.
+  description?: string;
 
   @CreateDateColumn()
   createdAt: Date;

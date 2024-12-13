@@ -54,17 +54,17 @@ export class AuthController {
   @Public()
   @UseGuards(GoogleAuthGuard)
   @Get('google/login')
-  googleLogin() {}
+  googleLogin() {} // Redirect to Google login page
 
   /////////////////////////////// Google Login Callback Authentication ///////////////////////////////
   @Public()
   @UseGuards(GoogleAuthGuard)
-  @Get('google/callback')
+  @Get('google/callback') // Redirect from Google login page. This route is defined in Google Developer Console.
   async googleCallback(@Req() req, @Res() res) {
     const response = await this.authService.login(req.user.id);
 
     res.redirect(
-      `http://localhost:5173?token=${response.accessToken}&refreshToken=${response.refreshToken}`,
+      `http://localhost/digital-arena/google-authentication-demo-view.php?id=${response.id}&accessToken=${response.accessToken}&refreshToken=${response.refreshToken}`,
     );
   }
 

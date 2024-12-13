@@ -21,10 +21,12 @@ import emailConfig from './config/email.config';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { MailService } from './services/mail.service';
 import { SmsService } from './services/sms.service';
+import { ActionLogsService } from 'src/action-logs/action-logs.service';
+import { ActionLog } from 'src/entities/action-log.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Verification]),
+    TypeOrmModule.forFeature([User, Verification, ActionLog]),
     JwtModule.registerAsync(jwtConfig.asProvider()),
     ConfigModule.forFeature(jwtConfig),
     ConfigModule.forFeature(refreshJwtConfig),
@@ -33,10 +35,6 @@ import { SmsService } from './services/sms.service';
   ],
   controllers: [AuthController],
   providers: [
-    AuthService,
-    UsersService,
-    MailService,
-    SmsService,
     LocalStrategy,
     JwtStrategy,
     RefreshJwtStrategy,
@@ -53,7 +51,11 @@ import { SmsService } from './services/sms.service';
       provide: APP_GUARD,
       useClass: RolesGuard, // @UseGuards(RolesGuard) in controller applied to all routes in all Project modules.
     },
+    AuthService,
+    UsersService,
+    MailService,
     SmsService,
+    ActionLogsService,
   ],
 })
 export class AuthModule {}

@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Product } from './product.entity';
 
@@ -27,5 +28,6 @@ export class Files {
 
   ////////// RELATIONSHIPS //////////
   @ManyToOne(() => Product, (product) => product.files, { nullable: false }) // Many files belong to one product.
+  @JoinColumn()
   product: Product;
 }

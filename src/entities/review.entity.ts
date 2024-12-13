@@ -28,7 +28,7 @@ export class Review {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Column({ type: 'enum', enum: ReviewStatus, default: ReviewStatus.PENDING }) // Review status (Pending, Approved, Rejected).
+  @Column({ type: 'enum', enum: ReviewStatus, default: ReviewStatus.PENDING }) // Enum for review status.
   reviewStatus: ReviewStatus;
 
   ////////// RELATIONSHIPS //////////

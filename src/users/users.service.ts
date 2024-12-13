@@ -4,6 +4,7 @@ import { User } from '../entities/user.entity';
 import { Repository } from 'typeorm';
 import { NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -88,9 +89,9 @@ export class UsersService {
   }
 
   //////// PATCH REQUESTS ////////
-  
+
   // Updates an existing user in db.
-  async updateUser(id: number, updateUserDto: CreateUserDto) {
+  async updateUser(id: number, updateUserDto: UpdateUserDto) {
     // Check if the user exists.
     if (
       !(await this.userRepository.findOne({

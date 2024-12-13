@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
+import { Comment } from './comment.entity';
 
 export enum UserRole {
   BUYER = 'BUYER',
@@ -54,4 +55,8 @@ export class User {
   // Add the One-to-Many relationship
   @OneToMany(() => Order, (order) => order.user)
   orders: Order[];
+
+  // One user can have many comments
+  @OneToMany(() => Comment, (comment) => comment.user)
+  comments: Comment[];
 }

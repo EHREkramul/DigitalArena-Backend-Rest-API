@@ -2,29 +2,41 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
+  ManyToMany,
+  JoinTable,
   ManyToOne,
-  OneToMany,
+  JoinColumn,
 } from 'typeorm';
-import { Category } from '../entities/category.entity';
-import { Product } from 'src/entities/product.entity';
+import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { Tag } from './tag.entity';
+import { Category } from './category.entity';
 
 @Entity({ name: 'subcategories' })
 export class Subcategory {
-  @PrimaryGeneratedColumn() // Unique identifier for the subcategory. It's auto-generated number.
+  //Auto-generated primary key
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 100, nullable: false }) // Subcategory name.
+  //Name of the subcategory
+  @Column({ type: 'varchar', length: 255 })
+  @IsNotEmpty()
+  @IsString()
+  @MaxLength(255)
   name: string;
 
+  // Many-to-Many relationship with Tag
+  @ManyToMany(() => Tag, (tag) => tag.subcategories)
+  @JoinTable({
+    name: 'subcategory_tags',
+    joinColumn: { name: 'subcategory_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'tag_id', referencedColumnName: 'id' },
+  })
+  tags: Tag[];
+
+  // Many-to-one relationship with Category
   @ManyToOne(() => Category, (category) => category.subcategories, {
     nullable: false,
-  }) // Many subcategories belong to one category.
+  })
+  @JoinColumn({ name: 'category_id' })
   category: Category;
-
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }) // Automatically sets creation timestamp.
-  created_at: Date;
-
-  @OneToMany(() => Product, (product) => product.subcategory) // One-to-many relationship
-  products: Product[];
 }

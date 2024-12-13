@@ -46,12 +46,13 @@ export class UsersController {
     return this.appService.createUser(createUserDto);
   }
 
-
   //////// PATCH REQUESTS ////////
 
-
   @Patch('updateUser/:id') // Request to update an user by id. Update the information stored in database of an user.
-  updateUser(@Param('id', ParseIntPipe) id: number, @Body(ValidationPipe) updateUserDto: UpdateUserDto) {
+  updateUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(ValidationPipe) updateUserDto: UpdateUserDto,
+  ) {
     return this.appService.updateUser(id, updateUserDto);
   }
 }

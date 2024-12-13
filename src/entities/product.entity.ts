@@ -4,62 +4,125 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  ManyToOne,
-  JoinColumn,
   OneToMany,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
-import { Category } from './category.entity';
-import { Subcategory } from '../entities/subcategory.entity';
+import {
+  IsNotEmpty,
+  IsString,
+  IsNumber,
+  IsPositive,
+  IsBoolean,
+  IsOptional,
+  IsDate,
+  MaxLength,
+  Min,
+  Max,
+} from 'class-validator';
 import { Files } from './files.entity';
+import { Comment } from './comment.entity';
+import { Tag } from './tag.entity';
 
 @Entity({ name: 'products' })
 export class Product {
-  @PrimaryGeneratedColumn() // Unique identifier for the product. It's auto-generated number.
+  //Auto-generated primary key
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 255 }) // Name of the product.
+  //Name of the product
+  @Column({ type: 'varchar', length: 255 })
+  @IsNotEmpty()
+  @IsString()
+  @MaxLength(255)
   name: string;
 
-  @Column({ type: 'text' }) // Detailed description.
+  //Description of the product
+  @Column({ type: 'text' })
+  @IsNotEmpty()
+  @IsString()
   description: string;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2 }) // Price with decimal precision.
+  //Price of the product
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  @IsNotEmpty()
+  @IsNumber()
+  @IsPositive()
   price: number;
 
-  @ManyToOne(() => Category, (category) => category.products, {
-    nullable: false,
-  }) // Foreign key to categories.
-  @JoinColumn({ name: 'category_id' })
-  category: Category;
-
-  @ManyToOne(() => Subcategory, (subcategory) => subcategory.products, {
-    nullable: true,
-  }) // Foreign key to subcategories.
-  @JoinColumn({ name: 'subcategory_id' })
-  subcategory: Subcategory;
-
-  @Column({ type: 'varchar', length: 255, nullable: true }) // URL of product image.
+  //Image URL of the product
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
   image_url?: string;
 
-  @Column({ type: 'boolean', default: true }) // Active state of the product.
+  //Is the product active?
+  @Column({ type: 'boolean', default: true })
+  @IsNotEmpty()
+  @IsBoolean()
   is_active: boolean;
 
-  @CreateDateColumn({ type: 'timestamp' }) // Timestamp when the product was created.
+  //Creation timestamp
+  @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 
-  @UpdateDateColumn({ type: 'timestamp' }) // Timestamp when the product was updated.
+  //Update timestamp
+  @UpdateDateColumn({ type: 'timestamp' })
   updated_at: Date;
 
-  @Column({ type: 'decimal', precision: 3, scale: 2, default: 0 }) // Average rating out of 5.
-  rating_avg: number;
-
-  @Column({ type: 'int', default: 0 }) // Count of ratings/reviews.
-  rating_count: number;
-
-  @Column({ type: 'varchar', length: 255, nullable: true }) // Preview URL.
+  //Preview URL of the product
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
   preview_url?: string;
 
-  // One-to-Many relationship with files (a product can have multiple files)
+  //Number of views of the product
+  @Column({ type: 'int', default: 0 })
+  @IsNumber()
+  @Min(0)
+  views: number;
+
+  //Number of downloads of the product
+  @Column({ type: 'int', default: 0 })
+  @IsNumber()
+  @Min(0)
+  downloads: number;
+
+  //Number of likes of the product
+  @Column({ type: 'int', default: 0 })
+  @IsNumber()
+  @Min(0)
+  likes: number;
+
+  //Published date of the product
+  @Column({ type: 'timestamp', nullable: true })
+  @IsOptional()
+  @IsDate()
+  published_date: Date;
+
+  //Average rating of the product
+  @Column({ type: 'decimal', precision: 3, scale: 2, default: 0 })
+  @IsNumber()
+  @Min(0)
+  @Max(5)
+  rating_avg: number;
+
+  //Related files of the product
   @OneToMany(() => Files, (file) => file.product)
-  files: File[];
+  files: Files[];
+
+  //Comments of the product
+  @OneToMany(() => Comment, (comment) => comment.product)
+  comments: Comment[];
+
+  // Tags associated with the product
+  @ManyToMany(() => Tag, (tag) => tag.products)
+  @JoinTable({
+    name: 'product_tags',
+    joinColumn: { name: 'product_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'tag_id', referencedColumnName: 'id' },
+  })
+  tags: Tag[];
 }

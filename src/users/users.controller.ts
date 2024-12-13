@@ -58,6 +58,16 @@ export class UsersController {
     return this.usersService.createUser(createUserDto);
   }
 
+<<<<<<< HEAD
+  //////// PATCH REQUESTS ////////
+
+  @Patch('updateUser/:id') // Request to update an user by id. Update the information stored in database of an user.
+  updateUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(ValidationPipe) updateUserDto: UpdateUserDto,
+  ) {
+    return this.appService.updateUser(id, updateUserDto);
+=======
   /////////////////////////////// Update an User Information ///////////////////////////////
   @Patch('updateUser')
   updateUser(@Req() req, @Body(ValidationPipe) updateUserDto: UpdateUserDto) {
@@ -132,5 +142,6 @@ export class UsersController {
       req.user.id,
       profileImage.filename,
     );
+>>>>>>> 2ce6cd9bdc18535ecdda71ab405f1ae3dc48bbc6
   }
 }

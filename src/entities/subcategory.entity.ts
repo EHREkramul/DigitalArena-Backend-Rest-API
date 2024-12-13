@@ -6,9 +6,12 @@ import {
   ManyToOne,
   OneToMany,
   JoinColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { Category } from '../entities/category.entity';
 import { Product } from 'src/entities/product.entity';
+import { Tag } from './tag.entity';
 
 @Entity({ name: 'subcategories' })
 export class Subcategory {
@@ -36,4 +39,13 @@ export class Subcategory {
 
   @OneToMany(() => Product, (product) => product.subcategory) // One subcategory can have many products. || Many products can belong to one subcategory.
   products: Product[];
+
+  // Many-to-Many relationship with Tag
+  @ManyToMany(() => Tag, (tag) => tag.subcategories)
+  @JoinTable({
+    name: 'subcategory_tags',
+    joinColumn: { name: 'subcategory_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'tag_id', referencedColumnName: 'id' },
+  })
+  tags: Tag[];
 }

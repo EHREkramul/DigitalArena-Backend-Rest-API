@@ -39,17 +39,14 @@ import smsConfig from './auth/config/sms.config';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(
-      // for environment variables in .env file
-      {
-        isGlobal: true,
-        expandVariables: true,
-        load: [dbConfig, smsConfig],
-      },
-    ),
+    ConfigModule.forRoot({
+      isGlobal: true, // Makes environment variables globally available
+      expandVariables: true,
+      load: [dbConfig, smsConfig], // Loads environment variables from dbConfig and smsConfig
+    }),
     TypeOrmModule.forRootAsync({
-      useFactory: dbConfig,
-    }), // for database connection
+      useFactory: dbConfig, // Dynamically load the dbConfig for TypeORM connection
+    }),
     TypeOrmModule.forFeature([
       User,
       Order,
@@ -68,7 +65,7 @@ import smsConfig from './auth/config/sms.config';
       CartItem,
       Files,
       Verification,
-    ]),
+    ]), // Registers entities for the current module
     AuthModule,
     UsersModule,
     ProductsModule,

@@ -7,7 +7,7 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 import { User } from './user.entity'; // Assuming User entity is in the same directory.
-import { Product } from './product.entity'; // Assuming Product entity is in the same directory.
+import { Product } from './product.entity'; // Assuming User entity is in the same directory.
 
 @Entity({ name: 'download_permissions' })
 export class DownloadPermission {

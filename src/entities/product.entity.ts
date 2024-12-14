@@ -64,13 +64,13 @@ export class Product {
   @OneToMany(() => WishlistItem, (wishlistItem) => wishlistItem.product, {
     cascade: true,
   }) // One product can be in many wishlists.
-  wishlistItems: WishlistItem[];
+  wishlistItems?: WishlistItem[];
 
   @OneToMany(() => CartItem, (cartItem) => cartItem.product, { cascade: true }) // One product can be in many carts.
-  cartItems: CartItem[];
+  cartItems?: CartItem[];
 
   @OneToMany(() => Files, (file) => file.product, { cascade: true }) // One product can have many files.
-  files: File[];
+  files?: File[];
 
   @ManyToOne(() => Category, (category) => category.products, {
     nullable: false,
@@ -83,15 +83,15 @@ export class Product {
     (downloadPermission) => downloadPermission.product,
     { cascade: true },
   ) // One product can have many download permissions for many users.
-  downloadPermissions: DownloadPermission[];
+  downloadPermissions?: DownloadPermission[];
 
   @OneToMany(() => OrderItem, (orderItem) => orderItem.product, {
     cascade: true,
   }) // One product can be in many orders.
-  orderItems: OrderItem[];
+  orderItems?: OrderItem[];
 
   @OneToMany(() => Review, (review) => review.product, { cascade: true }) // One product can have many reviews.
-  reviews: Review[];
+  reviews?: Review[];
 
   // Tags associated with the product
   @ManyToMany(() => Tag, (tag) => tag.products)
@@ -100,5 +100,5 @@ export class Product {
     joinColumn: { name: 'productId', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'tagId', referencedColumnName: 'id' },
   })
-  tags: Tag[];
+  tags?: Tag[];
 }

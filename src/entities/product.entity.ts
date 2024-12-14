@@ -11,7 +11,6 @@ import {
   JoinTable,
 } from 'typeorm';
 import { Category } from './category.entity';
-import { Subcategory } from '../entities/subcategory.entity';
 import { Files } from './files.entity';
 import { WishlistItem } from './wishlist-item.entity';
 import { CartItem } from './cart-item.entity';
@@ -79,12 +78,6 @@ export class Product {
   @JoinColumn()
   category: Category;
 
-  @ManyToOne(() => Subcategory, (subcategory) => subcategory.products, {
-    nullable: true,
-  }) // Many products can belong to one subcategory.
-  @JoinColumn()
-  subcategory: Subcategory;
-
   @OneToMany(
     () => DownloadPermission,
     (downloadPermission) => downloadPermission.product,
@@ -104,8 +97,8 @@ export class Product {
   @ManyToMany(() => Tag, (tag) => tag.products)
   @JoinTable({
     name: 'product_tags',
-    joinColumn: { name: 'product_id', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'tag_id', referencedColumnName: 'id' },
+    joinColumn: { name: 'productId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'tagId', referencedColumnName: 'id' },
   })
   tags: Tag[];
 }

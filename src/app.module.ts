@@ -10,7 +10,6 @@ import { ReviewsModule } from './reviews/reviews.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { SiteSettingsModule } from './site-settings/site-settings.module';
 import { CategoriesModule } from './categories/categories.module';
-import { SubcategoriesModule } from './subcategories/subcategories.module';
 import { CouponsModule } from './coupons/coupons.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
@@ -24,7 +23,6 @@ import { SiteSetting } from './entities/site-setting.entity';
 import { ActionLog } from './entities/action-log.entity';
 import { DownloadPermission } from './entities/download-permission.entity';
 import { Category } from './entities/category.entity';
-import { Subcategory } from './entities/subcategory.entity';
 import { Coupon } from './entities/coupon.entity';
 import { OrderItem } from './entities/order-item.entity';
 import { CartItem } from './entities/cart-item.entity';
@@ -59,7 +57,6 @@ import smsConfig from './auth/config/sms.config';
       ActionLog,
       DownloadPermission,
       Category,
-      Subcategory,
       Coupon,
       OrderItem,
       CartItem,
@@ -75,7 +72,6 @@ import smsConfig from './auth/config/sms.config';
     NotificationsModule,
     SiteSettingsModule,
     CategoriesModule,
-    SubcategoriesModule,
     CouponsModule,
     WishlistItemsModule,
     DowloadPermissionsModule,
@@ -84,4 +80,4 @@ import smsConfig from './auth/config/sms.config';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

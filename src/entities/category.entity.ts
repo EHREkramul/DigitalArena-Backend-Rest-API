@@ -5,7 +5,6 @@ import {
   CreateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { Subcategory } from '../entities/subcategory.entity'; // Adjust to point to Subcategory entity
 import { Product } from 'src/entities/product.entity';
 
 @Entity({ name: 'categories' })
@@ -25,10 +24,7 @@ export class Category {
   @CreateDateColumn()
   createdAt: Date;
 
-  ////////// RELATIONSHIPS //////////
-  @OneToMany(() => Subcategory, (subcategory) => subcategory.category) // One category can have many subcategories.
-  subcategories: Subcategory[];
-
+  ////////// RELATIONSHIPS //////////=
   @OneToMany(() => Product, (product) => product.category) // One category can have many products. || Many products can belong to one category.
   products: Product[];
 }

@@ -3,10 +3,10 @@ import {
   PrimaryGeneratedColumn,
   Column,
   ManyToMany,
-  JoinTable,
+  CreateDateColumn,
 } from 'typeorm';
+
 import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
-import { Subcategory } from './subcategory.entity';
 import { Product } from './product.entity';
 
 @Entity({ name: 'tags' })
@@ -21,13 +21,11 @@ export class Tag {
   @MaxLength(255)
   name: string;
 
+  @CreateDateColumn()
+  createdAt: Date;
+
   ////////// RELATIONSHIPS //////////
   // Many-to-Many relationship with Product
   @ManyToMany(() => Product, (product) => product.tags)
   products: Product[];
-
-  // Many-to-Many relationship with Subcategory
-  @ManyToMany(() => Subcategory, (subcategory) => subcategory.tags)
-  @JoinTable()
-  subcategories: Subcategory[];
 }

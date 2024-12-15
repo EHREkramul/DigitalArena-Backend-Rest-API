@@ -299,6 +299,13 @@ export class UsersService {
     };
   }
 
+  ////////////////////////////////////// Insert Bulk Users(Temp-Only in Dev Mode) //////////////////////////////////////
+  async insertBulkUsers(createUserDto: CreateUserDto[]) {
+    const users = this.userRepository.create(createUserDto);
+    await this.userRepository.save(users);
+    return users;
+  }
+
   //////////////////////////////////////// HELPER METHODS ////////////////////////////////////////
   async updateHashedRefreshToken(userId: number, hashedRefreshToken: string) {
     return await this.userRepository.update(

@@ -6,14 +6,15 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Product } from 'src/entities/product.entity';
+import { Categories } from 'src/auth/enums/category.enum';
 
 @Entity({ name: 'categories' })
 export class Category {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 100, unique: true, nullable: false }) // Unique and non-nullable category name.
-  name: string;
+  @Column({ type: 'enum', enum: Categories, unique: true, nullable: false }) // Unique and non-nullable category name.
+  name: Categories;
 
   @Column({ type: 'text', nullable: true }) // Description can be null.
   description?: string;

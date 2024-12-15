@@ -1,5 +1,4 @@
 src/seeding
-assets.zip
 
 # Ignore everything in 3d_model except selected files
 assets/3d_model/*

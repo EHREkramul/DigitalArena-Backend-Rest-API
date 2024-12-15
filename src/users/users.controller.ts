@@ -133,4 +133,11 @@ export class UsersController {
       profileImage.filename,
     );
   }
+
+  /////////////////////////////// Insert Bulk Users(Temp-Only in Dev Mode) ///////////////////////////////
+  @Public()
+  @Post('insertBulkUsers')
+  insertBulkUsers(@Body(ValidationPipe) createUserDto: CreateUserDto[]) {
+    return this.usersService.insertBulkUsers(createUserDto);
+  }
 }

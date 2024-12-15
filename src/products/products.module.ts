@@ -8,16 +8,17 @@ import { ThreeDModelsModule } from './three_d-models/three_d-models.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Product } from 'src/entities/product.entity';
 import { Files } from 'src/entities/files.entity';
+import { Category } from 'src/entities/category.entity';
 
 @Module({
   controllers: [ProductsController],
   providers: [ProductsService],
   imports: [
-    TypeOrmModule.forFeature([Product, Files]), // Add Product and File to use repository in service.
+    TypeOrmModule.forFeature([Product, Files, Category]), // Add Product and File to use repository in service.
     EbooksModule,
     GraphicsTemplatesModule,
     PresentationSlidesModule,
     ThreeDModelsModule,
   ],
 })
-export class ProductsModule {}
+export class ProductsModule { }

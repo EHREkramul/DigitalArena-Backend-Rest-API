@@ -1,16 +1,21 @@
-import { Controller, Get, Query } from '@nestjs/common';
-import { Role } from 'src/auth/enums/role.enum';
-import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Controller, Get, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
 import { ProductsService } from './products.service';
+import { GetFilteredProductsDto } from './dto/getFilteredProducts.dto';
 
 @Controller('products')
 export class ProductsController {
     constructor(private readonly productsService: ProductsService) { }
 
-    // <---------- Get Trending Products ---------->
-    //@Public()
-    @Roles(Role.ADMIN || Role.BUYER)
+    // // <---------- Fetch All Products ---------->
+    // @Public()
+    // @Get('getAllProducts')
+    // getAllProducts() {
+    //     return this.productsService.getAllProducts();
+    // }
+
+    // <---------- Get Trending Products ----------
+    @Public()
     @Get('getTrendingProducts')
     getTrendingProducts() {
         return this.productsService.getTrendingProducts();
@@ -18,32 +23,18 @@ export class ProductsController {
 
     // <---------- Get New Arrival Products ---------->
     @Public()
-    //@Roles(Role.ADMIN || Role.BUYER)
     @Get('getNewArrivalProducts')
     getNewArrivalProducts() {
         return this.productsService.getNewArrivalProducts();
     }
 
-    // // <---------- Get Filtered Products ---------->
-    // @Roles(Role.ADMIN || Role.BUYER)
-    // @Get('getFilteredProducts')
-    // getFilteredProducts(
-    //     @Query('category') category: string,
-    //     @Query('sort') sort: string,
-    //     @Query('tags') tags: string,
-    //     @Query('priceMin') priceMin: number,
-    //     @Query('priceMax') priceMax: number,
-    // ) {
-    //     const filters = {
-    //         categoryId: category,
-    //         sort,
-    //         tags: tags ? tags.split(',') : [],
-    //         priceMin,
-    //         priceMax,
-    //     };
-
-    //     return this.productsService.getFilteredProducts(filters);
-    // }
+    // <---------- Get Filtered Products ---------->
+    @Public()
+    @Get('getFilteredProducts')
+    @UsePipes(new ValidationPipe({ transform: true }))
+    getFilteredProducts(
+        @Query() filters: GetFilteredProductsDto
+    ) {
+        return this.productsService.getFilteredProducts(filters);
+    }
 }
-
-

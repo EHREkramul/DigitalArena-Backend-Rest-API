@@ -21,7 +21,7 @@ export class DownloadPermission {
   @CreateDateColumn()
   createdAt: Date;
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'timestamp', nullable: true })
   lastDownloadedAt: Date;
 
   ////////// RELATIONSHIPS //////////

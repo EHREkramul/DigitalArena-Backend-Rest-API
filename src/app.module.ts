@@ -80,4 +80,4 @@ import smsConfig from './auth/config/sms.config';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

@@ -24,7 +24,7 @@ export class Product {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 255 }) // Name/Title of the product.
+  @Column({ type: 'varchar', length: 255, unique: true }) // Name/Title of the product.
   name: string;
 
   @Column({ type: 'text' }) // Detailed description.

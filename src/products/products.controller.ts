@@ -1,42 +1,40 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
 import { ProductsService } from './products.service';
+import { GetFilteredProductsDto } from './dto/getFilteredProducts.dto';
 
 @Controller('products')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+    constructor(private readonly productsService: ProductsService) { }
 
-  // <---------- Get Trending Products ---------->
-  @Public()
-  @Get('getTrendingProducts')
-  getTrendingProducts() {
-    return this.productsService.getTrendingProducts();
-  }
+    // // <---------- Fetch All Products ---------->
+    // @Public()
+    // @Get('getAllProducts')
+    // getAllProducts() {
+    //     return this.productsService.getAllProducts();
+    // }
 
-  // <---------- Get New Arrival Products ---------->
-  @Public()
-  @Get('getNewArrivalProducts')
-  getNewArrivalProducts() {
-    return this.productsService.getNewArrivalProducts();
-  }
+    // <---------- Get Trending Products ----------
+    @Public()
+    @Get('getTrendingProducts')
+    getTrendingProducts() {
+        return this.productsService.getTrendingProducts();
+    }
 
-  // // <---------- Get Filtered Products ---------->
-  // @Get('getFilteredProducts')
-  // getFilteredProducts(
-  //     @Query('category') category: string,
-  //     @Query('sort') sort: string,
-  //     @Query('tags') tags: string,
-  //     @Query('priceMin') priceMin: number,
-  //     @Query('priceMax') priceMax: number,
-  // ) {
-  //     const filters = {
-  //         categoryId: category,
-  //         sort,
-  //         tags: tags ? tags.split(',') : [],
-  //         priceMin,
-  //         priceMax,
-  //     };
+    // <---------- Get New Arrival Products ---------->
+    @Public()
+    @Get('getNewArrivalProducts')
+    getNewArrivalProducts() {
+        return this.productsService.getNewArrivalProducts();
+    }
 
-  //     return this.productsService.getFilteredProducts(filters);
-  // }
+    // <---------- Get Filtered Products ---------->
+    @Public()
+    @Get('getFilteredProducts')
+    @UsePipes(new ValidationPipe({ transform: true }))
+    getFilteredProducts(
+        @Query() filters: GetFilteredProductsDto
+    ) {
+        return this.productsService.getFilteredProducts(filters);
+    }
 }

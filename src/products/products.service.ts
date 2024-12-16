@@ -2,193 +2,186 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Product } from '../entities/product.entity';
-import { BadRequestException } from '@nestjs/common';
+import { Category } from '../entities/category.entity';
+import {
+    BadRequestException,
+    NotFoundException,
+} from '@nestjs/common';
 
 @Injectable()
 export class ProductsService {
-  constructor(
-    @InjectRepository(Product)
-    private readonly productRepo: Repository<Product>,
-  ) {}
+    constructor(
+        @InjectRepository(Product) private readonly productRepo: Repository<Product>,
+        @InjectRepository(Category) private readonly categoryRepo: Repository<Category>
+    ) { }
 
-  // <---------- Fetch All Products ---------->
-  async getAllProducts(): Promise<Product[]> {
-    try {
-      return await this.productRepo.find();
-    } catch (error) {
-      throw new BadRequestException(`Error fetching products: ${error}`);
-    }
-  }
+    // // <---------- Fetch All Products ---------->
+    // async getAllProducts(): Promise<Product[]> {
+    //     try {
+    //         return await this.productRepo.find();
+    //     } catch (error) {
+    //         console.error('Error fetching products:', error.message); 
+    //         throw new BadRequestException('Error fetching products');
+    //     }
+    // }
 
-  // <---------- Get Trending Products ---------->
-  async getTrendingProducts(): Promise<Product[]> {
-    try {
-      // <---------- Weighted Scoring Algorithm ---------->
-      // Normalizer Value = Value - Min(Values) / Max(Values) - Min(Values)
-      // Age of the Product =( NOW() - createdAt ) / 86400
-      // Time Decay = EXP(-0.1 * Age of the Product)
-      // Trend Score = (Weighted View Count * 0.3) + (Weighted Download Count * 0.4) + (Weighted Rating Avg * 0.1) + (Weighted Rating Count * 0.05) + (Weighted Like Count * 0.05) - (Weighted Unlike Count * 0.05) + (Time Decay * 0.1)
+    // <---------- Get Trending Products ---------->
+    async getTrendingProducts(limit?: number): Promise<Product[]> {
+        try {
+            // If no limit is passed, default to 10 products
+            let limitquery = limit === -1 ? 0 : `LIMIT 10`;
 
-      return await this.productRepo.query(`
+            // <---------- Weighted Scoring Algorithm ---------->
+            // Normalizer Value = Value - Min(Values) / Max(Values) - Min(Values)
+            // Age of the Product =( NOW() - createdAt ) / 86400
+            // Time Decay = EXP(-0.1 * Age of the Product)
+            // Trend Score = (Weighted View Count * 0.3) + (Weighted Download Count * 0.4) + (Weighted Rating Avg * 0.1) + 
+            // (Weighted Rating Count * 0.05) + (Weighted Like Count * 0.05) - (Weighted Unlike Count * 0.05) + (Time Decay * 0.1)
+
+            const query = `
                 SELECT 
-                    id, name,
+                    p.id AS "Product ID ", 
+                    p.name AS "Product Name ",
+                    c.name AS "Category ",
                     (
                         ("viewCount" - MIN("viewCount") OVER ()) / (MAX("viewCount") OVER () - MIN("viewCount") OVER ()) * 0.3 +
                         ("downloadCount" - MIN("downloadCount") OVER ()) / (MAX("downloadCount") OVER () - MIN("downloadCount") OVER ()) * 0.4 +
                         "ratingAvg" * 0.1 +
                         ("ratingCount" - MIN("ratingCount") OVER ()) / (MAX("ratingCount") OVER () - MIN("ratingCount") OVER ()) * 0.05 +
-                        ("likeCount" - MIN("likeCount") OVER ()) / (MAX("likeCount") OVER () - MIN("likeCount") OVER ()) * 0.05 -
+                        ("likeCount" - MIN("likeCount") OVER ()) / (MAX("likeCount") OVER () - MIN("likeCount") OVER ()) * 0.05 - 
                         ("unLikeCount" - MIN("unLikeCount") OVER ()) / (MAX("unLikeCount") OVER () - MIN("unLikeCount") OVER ()) * 0.05 +
-                        EXP(-0.1 * EXTRACT(EPOCH FROM (NOW() - "createdAt")) / 86400) * 0.1
-                    ) AS trendScore
-                FROM products
-                ORDER BY trendScore DESC
-                LIMIT 10;
-            `);
-    } catch (error) {
-      throw new BadRequestException(
-        `Error fetching trending products: ${error}`,
-      );
+                        EXP(-0.1 * EXTRACT(EPOCH FROM (NOW() - p."createdAt")) / 86400) * 0.1
+                    ) AS "Trend Score "
+                FROM (
+                    SELECT 
+                        p.*,
+                        COALESCE(COUNT(dp.id), 0) AS "downloadCount" 
+                    FROM 
+                        products p
+                    LEFT JOIN 
+                        download_permissions dp ON dp."productId" = p.id
+                    GROUP BY 
+                        p.id
+                ) p
+                LEFT JOIN 
+                    categories c ON c.id = p."categoryId"
+                ORDER BY 
+                    "Trend Score " DESC
+                ${limitquery === 0 ? `` : 'LIMIT 10'}
+            `;
+
+            return await this.productRepo.query(query);
+        } catch (error) {
+            console.error('Error fetching trending products:', error.message);
+            throw new BadRequestException('Error fetching trending products');
+        }
     }
-  }
 
-  // <---------- Helper Function to Get Random Element ---------->
-  private getRandomElement<T>(array: T[]): T {
-    const randomIndex = Math.floor(Math.random() * array.length);
-    return array[randomIndex];
-  }
+    // <---------- Fetch New Arrival Products ---------->
+    async getNewArrivalProducts(): Promise<Product[]> {
+        try {
+            const products = await this.productRepo.find({
+                order: { createdAt: 'DESC' },
+                take: 10,
+            });
 
-  // <---------- Fetch New Arrival Products ---------->
-  async getNewArrivalProducts(): Promise<Product[]> {
-    try {
-      const products = await this.productRepo.find({
-        order: { createdAt: 'DESC' }, // Sort by createdAt in descending order
-        take: 10, // Limit to 10 products
-      });
-
-      console.log('Fetched Products:', products); // Debug log
-
-      return products;
-    } catch (error) {
-      throw new BadRequestException(
-        `Error fetching new arrival products: ${error}`,
-      );
+            return products;
+        } catch (error) {
+            console.error('Error fetching new arrival products:', error.message);
+            throw new BadRequestException('Error fetching new arrival products');
+        }
     }
-  }
 
-  // // <---------- Get Filtered Products ---------->
+    // <---------- Get Filtered Products ---------->
+    async getFilteredProducts(filters: any) {
+        const { category, sort, tags, priceMin, priceMax, free } = filters;
 
-  // async getFilteredProducts(filters: any) {
-  //     const { categoryId, sort, tags, priceMin, priceMax } = filters;
+        try {
+            //Fetching the categoryId from category name
+            const categoryRecord = await this.categoryRepo.findOne({ where: { name: category } });
 
-  //     // Start building the query
-  //     let query = this.productRepo.createQueryBuilder('product')
-  //         .leftJoinAndSelect('product.category', 'category')
-  //         .leftJoinAndSelect('product.tags', 'tag');
+            if (!categoryRecord) {
+                throw new NotFoundException('Category not found');
+            }
 
-  //     // Filter by category
-  //     if (categoryId) {
-  //         query = query.andWhere('category.id = :categoryId', { categoryId });
-  //     }
+            // Starting query with category filter
+            let query = this.productRepo.createQueryBuilder('product')
+                .leftJoinAndSelect('product.category', 'category')
+                .leftJoinAndSelect('product.tags', 'tag')
+                .where('category.id = :categoryId', { categoryId: categoryRecord.id });
 
-  //     // Filter by tags (if provided)
-  //     if (tags && tags.length > 0) {
-  //         query = query.andWhere('tag.name IN (:...tags)', { tags });
-  //     }
+            // Returning those products which matched with all the tags
+            if (tags && tags.length > 0) {
+                const tagsArray = tags.split(',');
+                query = query.andWhere(
+                    qb => {
+                        const subQuery = qb.subQuery()
+                            .select('product_tags.productId')
+                            .from('product_tags', 'product_tags')
+                            .where('product_tags.productId = product.id')
+                            .andWhere('product_tags.tagId IN (:...tags)', { tags: tagsArray })
+                            .groupBy('product_tags.productId')
+                            .having('COUNT(DISTINCT product_tags.tagId) = :tagCount', { tagCount: tagsArray.length })
+                            .getQuery();
+                        return 'product.id IN ' + subQuery;
+                    }
+                );
+            }
 
-  //     // Filter by price range (if provided)
-  //     if (priceMin) {
-  //         query = query.andWhere('product.price >= :priceMin', { priceMin });
-  //     }
-  //     if (priceMax) {
-  //         query = query.andWhere('product.price <= :priceMax', { priceMax });
-  //     }
+            // Converting priceMin and priceMax to numbers
+            const priceMinNum = priceMin ? Number(priceMin) : null;
+            const priceMaxNum = priceMax ? Number(priceMax) : null;
 
-  //     // Sort the results based on the selected sorting option
-  //     switch (sort) {
-  //         case 'price':
-  //             query = query.orderBy('product.price', 'ASC');
-  //             break;
-  //         case 'popularity':
-  //             query = query.orderBy('product.purchaseCount', 'DESC');
-  //             break;
-  //         case 'az':
-  //             query = query.orderBy('product.name', 'ASC');
-  //             break;
-  //         case 'za':
-  //             query = query.orderBy('product.name', 'DESC');
-  //             break;
-  //         case 'purchased':
-  //             query = query.orderBy('product.purchaseCount', 'DESC');
-  //             break;
-  //         case 'reviews':
-  //             query = query.orderBy('product.reviewCount', 'DESC');
-  //             break;
-  //         default:
-  //             query = query.orderBy('product.name', 'ASC');
-  //     }
+            // Checking the price range 
+            if (priceMinNum && priceMaxNum) {
+                try {
+                    query = query.andWhere('product.price >= :priceMinNum AND product.price <= :priceMaxNum', { priceMinNum, priceMaxNum });
+                } catch (error) {
+                    console.error('Error filtering products:', error.message); // Log error in terminal
+                    throw new BadRequestException('Error filtering products');
+                }
+            }
 
-  //     return await query.getMany();
-  // }
+            // If free products are requested
+            if (free) {
+                query = query.andWhere('product.price = 0');
+            }
 
-  // // <---------- Add a New Product ---------->
-  // async addProduct(product: Partial<Product>): Promise<Product> {
-  //     try {
-  //         // Predefined array of possible downloadCounts
-  //         const downloadCountsArray = [32, 12, 45, 67, 89, 10, 34, 56, 78, 90, 21, 43, 65, 87, 98, 100, 54, 33, 11, 22, 55, 66, 77, 88];
+            // Applying sorting
+            switch (sort) {
+                case 'popular':
+                    // popular products are trending products
+                    let trendingProducts = await this.getTrendingProducts();
+                    let trendingProductIds = trendingProducts.map((product: any) => product.id);
+                    if (trendingProductIds.length > 0) {
+                        query = query.andWhere('product.id IN (:...trendingProductIds)', { trendingProductIds });
+                    }
+                    break;
+                case 'lowest price':
+                    query = query.orderBy('product.price', 'ASC');
+                    break;
+                case 'highest price':
+                    query = query.orderBy('product.price', 'DESC');
+                    break;
+                case 'AZ':
+                    query = query.orderBy('product.name', 'ASC');
+                    break;
+                case 'ZA':
+                    query = query.orderBy('product.name', 'DESC');
+                    break;
+                default:
+                    // By default, sort by newest products
+                    query = query.orderBy('product.createdAt', 'DESC');
+                    break;
+            }
+            return await query.getMany();;
 
-  //         // Randomly select a value from the array
-  //         const downloadCounts = this.getRandomElement(downloadCountsArray);
-
-  //         // <---------- Validation Check ---------->
-  //         if (!product.name || !product.viewCount || !downloadCounts) { //product.downloadCount
-  //             throw new BadRequestException('Missing required product fields');
-  //         }
-
-  //         const newProduct = this.productRepo.create(product);
-  //         return await this.productRepo.save(newProduct);
-  //     } catch (error) {
-  //         if (error instanceof BadRequestException) {
-  //             throw error;
-  //         }
-  //         throw new BadRequestException('Error adding product');
-  //     }
-  // }
-
-  // // <---------- Update a Product ---------->
-  // async updateProduct(id: number, updatedProduct: Partial<Product>): Promise<Product> {
-  //     try {
-  //         // <---------- Check if Product Exists ---------->
-  //         const product = await this.productRepo.findOne({ where: { id } });
-  //         if (!product) {
-  //             throw new NotFoundException(`Product with ID ${id} not found`);
-  //         }
-
-  //         await this.productRepo.update(id, updatedProduct);
-  //         return this.productRepo.findOne({ where: { id } });
-  //     } catch (error) {
-  //         if (error instanceof NotFoundException) {
-  //             throw error;
-  //         }
-  //         throw new BadRequestException('Error updating product');
-  //     }
-  // }
-
-  // // <---------- Delete a Product ---------->
-  // async deleteProduct(id: number): Promise<void> {
-  //     try {
-  //         // <---------- Check if Product Exists ---------->
-  //         const product = await this.productRepo.findOne({ where: { id } });
-  //         if (!product) {
-  //             throw new NotFoundException(`Product with ID ${id} not found`);
-  //         }
-
-  //         await this.productRepo.delete(id);
-  //     } catch (error) {
-  //         if (error instanceof NotFoundException) {
-  //             throw error;
-  //         }
-  //         throw new BadRequestException('Error deleting product');
-  //     }
-  // }
+        } catch (error) {
+            console.error('Error filtering products:', error.message);
+            if (error instanceof NotFoundException) {
+                throw error;
+            }
+            throw new BadRequestException('Error filtering products');
+        }
+    }
 }

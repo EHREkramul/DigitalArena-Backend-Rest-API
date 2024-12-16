@@ -29,7 +29,10 @@ export class CartItem {
   @JoinColumn()
   cart: Cart;
 
-  @ManyToOne(() => Product, (product) => product.id, { nullable: false }) // Each cart item is linked to one product.
+  @ManyToOne(() => Product, (product) => product.id, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  }) // Each cart item is linked to one product.
   @JoinColumn()
   product: Product;
 }

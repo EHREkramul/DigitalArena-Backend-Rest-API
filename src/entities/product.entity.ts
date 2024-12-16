@@ -74,6 +74,7 @@ export class Product {
 
   @ManyToOne(() => Category, (category) => category.products, {
     nullable: false,
+    onDelete: 'SET NULL', // Set null on delete
   }) // Many products can belong to one category.
   @JoinColumn()
   category: Category;

@@ -33,7 +33,10 @@ export class Notification {
   updatedAt: Date;
 
   ////////// RELATIONSHIPS //////////
-  @ManyToOne(() => User, (user) => user.id, { nullable: false }) // Many notifications belong to one user.
+  @ManyToOne(() => User, (user) => user.id, {
+    nullable: true,
+    onDelete: 'SET NULL', // Set null on delete
+  }) // Many notifications belong to one user.
   @JoinColumn()
   user: User;
 }

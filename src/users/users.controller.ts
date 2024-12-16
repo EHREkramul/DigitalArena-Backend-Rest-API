@@ -27,6 +27,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { extname } from 'path';
 import { CurrentUser } from 'src/auth/types/current-user';
+import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 
 @Controller('users')
 export class UsersController {
@@ -65,6 +66,16 @@ export class UsersController {
     @Body(ValidationPipe) updateUserDto: UpdateUserDto,
   ) {
     return this.usersService.updateUser(req.user.id, updateUserDto);
+  }
+
+  /////////////////////////////// Update an User Role ///////////////////////////////
+  @Roles(Role.ADMIN)
+  @Patch('updateUserRole/:id')
+  updateUserRole(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(ValidationPipe) updateUserRoleDto: UpdateUserRoleDto,
+  ) {
+    return this.usersService.updateUserRole(id, updateUserRoleDto);
   }
 
   /////////////////////////////// Delete an User ///////////////////////////////
@@ -137,10 +148,17 @@ export class UsersController {
     );
   }
 
+  /////////////////////////////// Get User by ID ///////////////////////////////
+  @Roles(Role.ADMIN)
+  @Get('getUserById/:id')
+  getUserById(@Param('id', ParseIntPipe) id: number) {
+    return this.usersService.getUserById(id);
+  }
+
   /////////////////////////////// Insert Bulk Users(Temp-Only in Dev Mode) ///////////////////////////////
-  // @Public()
-  // @Post('insertBulkUsers')
-  // insertBulkUsers(@Body(ValidationPipe) createUserDto: CreateUserDto[]) {
-  //   return this.usersService.insertBulkUsers(createUserDto);
-  // }
+  @Public()
+  @Post('insertBulkUsers')
+  insertBulkUsers(@Body(ValidationPipe) createUserDto: CreateUserDto[]) {
+    return this.usersService.insertBulkUsers(createUserDto);
+  }
 }

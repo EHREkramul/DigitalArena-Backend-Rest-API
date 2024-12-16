@@ -22,7 +22,10 @@ export class Cart {
   updatedAt: Date;
 
   ////////// RELATIONSHIPS //////////
-  @OneToOne(() => User, (user) => user.cart) // Each cart is linked to one user.
+  @OneToOne(() => User, (user) => user.cart, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  }) // Each cart is linked to one user.
   @JoinColumn()
   user: User;
 

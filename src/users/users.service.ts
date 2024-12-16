@@ -18,6 +18,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { ActionLogsService } from 'src/action-logs/action-logs.service';
 import { ActionType } from 'src/auth/enums/action-type.enum';
+import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 
 @Injectable()
 export class UsersService {
@@ -183,6 +184,37 @@ export class UsersService {
     return result;
   }
 
+  // <----------------------- Update an User Role ----------------------->
+  async updateUserRole(id: number, updateUserRoleDto: UpdateUserRoleDto) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    // Check if the user exists or not with id.
+    if (!user) {
+      throw new NotFoundException(`User with id ${id} not found`);
+    }
+
+    // Check if id is not ADMIN.
+    if (user.role === 'ADMIN') {
+      throw new UnauthorizedException(`Unauthorized to update this User`);
+    }
+
+    const result = await this.userRepository.update(id, {
+      role: updateUserRoleDto.role,
+    });
+
+    // Update Action Log
+    const actionLog = {
+      action: ActionType.ADMIN_UPDATE_USER_ROLE,
+      description: `Admin updated User Role for User with id: ${id} to ${updateUserRoleDto.role}`,
+      user: user,
+    };
+    await this.actionLogsService.createActionLog(actionLog);
+
+    return {
+      message: `User Role Updated Successfully`,
+      userAffected: result.affected,
+    };
+  }
+
   // <----------------------- Delete an User ----------------------->
   async deleteUser(id: number) {
     const user = await this.userRepository.findOne({ where: { id } });
@@ -201,7 +233,7 @@ export class UsersService {
     // Update Action Log
     const actionLog = {
       action: ActionType.ADMIN_DELETE_USER,
-      description: 'Admin deleted an User',
+      description: `Admin deleted an User with id: ${id}`,
       user: user,
     };
     await this.actionLogsService.createActionLog(actionLog);
@@ -285,7 +317,7 @@ export class UsersService {
     }
 
     // Stream the image file to the client
-    res.sendFile(imagePath, (err) => {
+    res.sendFile(imagePath, (err: any) => {
       if (err) {
         throw new HttpException(
           'Unable to retrieve the profile image',
@@ -299,11 +331,38 @@ export class UsersService {
   }
 
   ////////////////////////////////////// Insert Bulk Users(Temp-Only in Dev Mode) //////////////////////////////////////
-  // async insertBulkUsers(createUserDto: CreateUserDto[]) {
-  //   const users = this.userRepository.create(createUserDto);
-  //   await this.userRepository.save(users);
-  //   return users;
-  // }
+  async insertBulkUsers(createUserDto: CreateUserDto[]) {
+    const users = this.userRepository.create(createUserDto);
+    await this.userRepository.save(users);
+    return users;
+  }
+
+  // <..................... Get User By Id .....................>
+  async getUserById(id: number) {
+    // Check if the user exists or not with id.
+    const user = await this.userRepository.findOne({
+      where: { id },
+      select: [
+        'id',
+        'username',
+        'email',
+        'fullName',
+        'phone',
+        'role',
+        'isActive',
+        'profileImage',
+        'balance',
+        'createdAt',
+        'updatedAt',
+        'lastLoginAt',
+      ],
+    });
+    if (!user) {
+      throw new NotFoundException(`User with id ${id} not found`);
+    }
+
+    return user;
+  }
 
   //////////////////////////////////////// HELPER METHODS ////////////////////////////////////////
   async updateHashedRefreshToken(userId: number, hashedRefreshToken: string) {

@@ -27,7 +27,10 @@ export class Files {
   updatedAt: Date;
 
   ////////// RELATIONSHIPS //////////
-  @ManyToOne(() => Product, (product) => product.files, { nullable: false }) // Many files belong to one product.
+  @ManyToOne(() => Product, (product) => product.files, {
+    nullable: false,
+    onDelete: 'CASCADE', // Delete files when product is deleted
+  }) // Many files belong to one product.
   @JoinColumn()
   product: Product;
 }

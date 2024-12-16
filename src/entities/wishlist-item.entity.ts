@@ -21,12 +21,16 @@ export class WishlistItem {
   updatedAt: Date;
 
   ////////// RELATIONSHIPS //////////
-  @ManyToOne(() => User, (user) => user.wishlistItems, { nullable: false }) // Each wishlist entry is linked to one user.
+  @ManyToOne(() => User, (user) => user.wishlistItems, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  }) // Each wishlist entry is linked to one user.
   @JoinColumn()
   user: User;
 
   @ManyToOne(() => Product, (product) => product.wishlistItems, {
     nullable: false,
+    onDelete: 'CASCADE',
   }) // Each wishlist entry is linked to one product.
   @JoinColumn()
   product: Product;

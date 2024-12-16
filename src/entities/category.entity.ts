@@ -26,6 +26,6 @@ export class Category {
   createdAt: Date;
 
   ////////// RELATIONSHIPS //////////=
-  @OneToMany(() => Product, (product) => product.category) // One category can have many products. || Many products can belong to one category.
+  @OneToMany(() => Product, (product) => product.category, { cascade: true }) // One category can have many products. || Many products can belong to one category.
   products: Product[];
 }

@@ -60,7 +60,10 @@ export class UsersController {
 
   /////////////////////////////// Update an User Information ///////////////////////////////
   @Patch('updateUser')
-  updateUser(@Req() req, @Body(ValidationPipe) updateUserDto: UpdateUserDto) {
+  updateUser(
+    @Req() req: any,
+    @Body(ValidationPipe) updateUserDto: UpdateUserDto,
+  ) {
     return this.usersService.updateUser(req.user.id, updateUserDto);
   }
 
@@ -135,9 +138,9 @@ export class UsersController {
   }
 
   /////////////////////////////// Insert Bulk Users(Temp-Only in Dev Mode) ///////////////////////////////
-  @Public()
-  @Post('insertBulkUsers')
-  insertBulkUsers(@Body(ValidationPipe) createUserDto: CreateUserDto[]) {
-    return this.usersService.insertBulkUsers(createUserDto);
-  }
+  // @Public()
+  // @Post('insertBulkUsers')
+  // insertBulkUsers(@Body(ValidationPipe) createUserDto: CreateUserDto[]) {
+  //   return this.usersService.insertBulkUsers(createUserDto);
+  // }
 }

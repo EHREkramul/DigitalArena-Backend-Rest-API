@@ -74,15 +74,16 @@ export class UsersController {
   updateUserRole(
     @Param('id', ParseIntPipe) id: number,
     @Body(ValidationPipe) updateUserRoleDto: UpdateUserRoleDto,
+    @Req() req: any,
   ) {
-    return this.usersService.updateUserRole(id, updateUserRoleDto);
+    return this.usersService.updateUserRole(id, updateUserRoleDto, req.user.id);
   }
 
   /////////////////////////////// Delete an User ///////////////////////////////
   @Roles(Role.ADMIN)
   @Delete('deleteUser/:id')
-  deleteUser(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.deleteUser(id);
+  deleteUser(@Param('id', ParseIntPipe) id: number, @Req() req: any) {
+    return this.usersService.deleteUser(id, req.user.id);
   }
 
   /////////////////////////////// Update User Profile Image ///////////////////////////////

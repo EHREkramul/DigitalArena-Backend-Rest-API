@@ -32,6 +32,7 @@ import { Verification } from './entities/verification.entity';
 import { WishlistItemsModule } from './wishlist-items/wishlist-items.module';
 import { DowloadPermissionsModule } from './dowload-permissions/dowload-permissions.module';
 import { ActionLogsModule } from './action-logs/action-logs.module';
+import { WalletsModule } from './wallets/wallets.module';
 import dbConfig from './config/db.config';
 import smsConfig from './auth/config/sms.config';
 
@@ -76,6 +77,7 @@ import smsConfig from './auth/config/sms.config';
     WishlistItemsModule,
     DowloadPermissionsModule,
     ActionLogsModule,
+    WalletsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

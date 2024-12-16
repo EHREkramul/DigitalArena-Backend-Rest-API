@@ -19,6 +19,7 @@ import * as path from 'path';
 import { ActionLogsService } from 'src/action-logs/action-logs.service';
 import { ActionType } from 'src/auth/enums/action-type.enum';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
+import { deleteTempDirectory } from 'src/auth/utility/delete-directory.util';
 
 @Injectable()
 export class UsersService {
@@ -43,7 +44,6 @@ export class UsersService {
         'role',
         'isActive',
         'profileImage',
-        'balance',
         'createdAt',
         'updatedAt',
         'lastLoginAt',
@@ -69,7 +69,6 @@ export class UsersService {
         'role',
         'isActive',
         'profileImage',
-        'balance',
         'createdAt',
         'updatedAt',
         'lastLoginAt',
@@ -185,7 +184,11 @@ export class UsersService {
   }
 
   // <----------------------- Update an User Role ----------------------->
-  async updateUserRole(id: number, updateUserRoleDto: UpdateUserRoleDto) {
+  async updateUserRole(
+    id: number,
+    updateUserRoleDto: UpdateUserRoleDto,
+    adminId: number,
+  ) {
     const user = await this.userRepository.findOne({ where: { id } });
     // Check if the user exists or not with id.
     if (!user) {
@@ -205,7 +208,7 @@ export class UsersService {
     const actionLog = {
       action: ActionType.ADMIN_UPDATE_USER_ROLE,
       description: `Admin updated User Role for User with id: ${id} to ${updateUserRoleDto.role}`,
-      user: user,
+      user: await this.userRepository.findOne({ where: { id: adminId } }),
     };
     await this.actionLogsService.createActionLog(actionLog);
 
@@ -216,7 +219,7 @@ export class UsersService {
   }
 
   // <----------------------- Delete an User ----------------------->
-  async deleteUser(id: number) {
+  async deleteUser(id: number, adminId: number) {
     const user = await this.userRepository.findOne({ where: { id } });
     // Check if the user exists or not with id.
     if (!user) {
@@ -230,15 +233,27 @@ export class UsersService {
 
     const result = await this.userRepository.delete(id);
 
+    // Clear user profile image directory
+    if (result.affected) {
+      // Check if the user has the direcotry
+      const userProfileDirectory = `./assets/user_profile_image/user_${id}`;
+      if (fs.existsSync(userProfileDirectory)) {
+        deleteTempDirectory(userProfileDirectory);
+      }
+    }
+
     // Update Action Log
     const actionLog = {
       action: ActionType.ADMIN_DELETE_USER,
       description: `Admin deleted an User with id: ${id}`,
-      user: user,
+      user: await this.userRepository.findOne({ where: { id: adminId } }),
     };
     await this.actionLogsService.createActionLog(actionLog);
 
-    return result;
+    return {
+      message: `User Deleted Successfully`,
+      userAffected: result.affected,
+    };
   }
 
   // <----------------------- Update User Profile Image ----------------------->
@@ -351,7 +366,6 @@ export class UsersService {
         'role',
         'isActive',
         'profileImage',
-        'balance',
         'createdAt',
         'updatedAt',
         'lastLoginAt',

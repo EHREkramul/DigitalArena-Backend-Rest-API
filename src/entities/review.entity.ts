@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 import { Product } from './product.entity';
-import { ReviewStatus } from 'src/auth/enums/reviewStatus.enum';
+import { Status } from 'src/auth/enums/status.enum';
 
 @Entity({ name: 'reviews' })
 export class Review {
@@ -28,8 +28,8 @@ export class Review {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Column({ type: 'enum', enum: ReviewStatus, default: ReviewStatus.PENDING }) // Enum for review status.
-  reviewStatus: ReviewStatus;
+  @Column({ type: 'enum', enum: Status, default: Status.PENDING }) // Enum for review status.
+  reviewStatus: Status;
 
   ////////// RELATIONSHIPS //////////
   @ManyToOne(() => User, (user) => user.reviews, {

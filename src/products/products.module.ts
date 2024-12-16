@@ -21,4 +21,4 @@ import { Category } from 'src/entities/category.entity';
     ThreeDModelsModule,
   ],
 })
-export class ProductsModule { }
+export class ProductsModule {}

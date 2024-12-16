@@ -28,8 +28,9 @@ export class UsersService {
     private mailService: MailService,
   ) { }
 
-  //////////////////////////////////////// GET REQUESTS ////////////////////////////////////////
+  ////////////////////////////////////// API METHODS //////////////////////////////////////
 
+  // <----------------------- GET All User ----------------------->
   async getAllUsers() {
     return await this.userRepository.find({
       select: [
@@ -50,7 +51,7 @@ export class UsersService {
     });
   }
 
-  // Get User Profile by Id. Do not provide sensitive information like password, refreshToken.
+  // <----------------------- GET User Profile ----------------------->
   async getUserProfileInfo(id: number) {
     if (!id) {
       throw new BadRequestException(`Id is required`);
@@ -79,18 +80,7 @@ export class UsersService {
     return user;
   }
 
-  /*// Get User by username.
-  async getUserByUsername(username: string) {
-    const user = await this.userRepository.findOne({ where: { username } });
-    if (!user) {
-      throw new NotFoundException(`User with username ${username} not found`);
-    }
-    return user;
-  }*/
-
-  //////////////////////////////////////// POST REQUESTS ////////////////////////////////////////
-
-  // Create an User.
+  // <----------------------- Create New User ----------------------->
   async createUser(createUserDto: CreateUserDto) {
     if (!createUserDto.username.match(/^[a-z0-9]+$/)) {
       throw new BadRequestException(
@@ -137,9 +127,7 @@ export class UsersService {
     return result;
   }
 
-  //////////////////////////////////////// PATCH REQUESTS ////////////////////////////////////////
-
-  // Update an User Info.
+  // <----------------------- Update an User Info ----------------------->
   async updateUser(id: number, updateUserDto: UpdateUserDto) {
     if (!id) {
       throw new BadRequestException(`Id is required`);
@@ -195,9 +183,7 @@ export class UsersService {
     return result;
   }
 
-  //////////////////////////////////////// DELETE REQUESTS ////////////////////////////////////////
-
-  // Delete an User by id.
+  // <----------------------- Delete an User ----------------------->
   async deleteUser(id: number) {
     const user = await this.userRepository.findOne({ where: { id } });
     // Check if the user exists or not with id.
@@ -223,70 +209,7 @@ export class UsersService {
     return result;
   }
 
-  //////////////////////////////////////// Other Methods ////////////////////////////////////////
-  async updateHashedRefreshToken(userId: number, hashedRefreshToken: string) {
-    return await this.userRepository.update(
-      { id: userId },
-      { refreshToken: hashedRefreshToken },
-    );
-  }
-
-  // fetch complete user including all sensitive information.
-  async getUserByIdWithCredential(id: number) {
-    if (!id) {
-      throw new BadRequestException(`Id is required`);
-    }
-
-    return await this.userRepository.findOne({
-      where: { id },
-    });
-  }
-
-  // Get users refresh token.
-  async getUserRefreshTokenFromDB(id: number) {
-    if (!id) {
-      throw new BadRequestException(`Id is required`);
-    }
-
-    const user = await this.userRepository.findOne({
-      where: { id },
-      select: ['id', 'refreshToken'],
-    });
-
-    if (!user) {
-      throw new NotFoundException(`User with id ${id} not found`);
-    }
-    return user;
-  }
-
-  // Get User by Email.
-  async getUserByEmail(email: string) {
-    return await this.userRepository.findOne({ where: { email } });
-  }
-
-  // Get User by Email or Username.
-  async getUserByDynamicCredential(identifier: string) {
-    // Get user by email or username.
-    const user = await this.userRepository.findOne({
-      where: [{ email: identifier }, { username: identifier }],
-    });
-
-    return user;
-  }
-
-  // Update Last Login.
-  async updateLastLogin(id: number) {
-    await this.userRepository.update(id, { lastLoginAt: new Date() });
-  }
-
-  // Change User Password.
-  async changePassword(id: number, hashedPassword: string) {
-    return this.userRepository.update(id, {
-      password: hashedPassword,
-    });
-  }
-
-  // Update User Profile Image.
+  // <----------------------- Update User Profile Image ----------------------->
   async updateProfileImage(userId: number, profileImageFileName: string) {
     const user = await this.userRepository.findOne({ where: { id: userId } });
 
@@ -329,7 +252,7 @@ export class UsersService {
     };
   }
 
-  // Get User Profile Image.
+  // <----------------------- GET User Profile Image ----------------------->
   async getUserProfileImage(userId: number, res: any) {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
@@ -374,5 +297,75 @@ export class UsersService {
     return {
       message: `Profile Image Sent Successfully`,
     };
+  }
+
+  ////////////////////////////////////// Insert Bulk Users(Temp-Only in Dev Mode) //////////////////////////////////////
+  async insertBulkUsers(createUserDto: CreateUserDto[]) {
+    const users = this.userRepository.create(createUserDto);
+    await this.userRepository.save(users);
+    return users;
+  }
+
+  //////////////////////////////////////// HELPER METHODS ////////////////////////////////////////
+  async updateHashedRefreshToken(userId: number, hashedRefreshToken: string) {
+    return await this.userRepository.update(
+      { id: userId },
+      { refreshToken: hashedRefreshToken },
+    );
+  }
+
+  // <.....................Helper Method: Fetch all user info.....................>
+  async getUserByIdWithCredential(id: number) {
+    if (!id) {
+      throw new BadRequestException(`Id is required`);
+    }
+
+    return await this.userRepository.findOne({
+      where: { id },
+    });
+  }
+
+  // <.....................Helper Method: Get user refresh toke from DB.....................>
+  async getUserRefreshTokenFromDB(id: number) {
+    if (!id) {
+      throw new BadRequestException(`Id is required`);
+    }
+
+    const user = await this.userRepository.findOne({
+      where: { id },
+      select: ['id', 'refreshToken'],
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with id ${id} not found`);
+    }
+    return user;
+  }
+
+  // <.....................Helper Method: Get user by Email.....................>
+  async getUserByEmail(email: string) {
+    return await this.userRepository.findOne({ where: { email } });
+  }
+
+  // <.....................Helper Method: Get user by Email || Username.....................>
+  async getUserByDynamicCredential(identifier: string) {
+    // Get user by email or username.
+    const user = await this.userRepository.findOne({
+      where: [{ email: identifier }, { username: identifier }],
+    });
+
+    return user;
+  }
+
+  // <.....................Helper Method: Update last login.....................>
+  async updateLastLogin(id: number) {
+    await this.userRepository.update(id, { lastLoginAt: new Date() });
+  }
+
+  // <.....................Helper Method: Update user password.....................>
+  async changePassword(id: number, hashedPassword: string) {
+    return this.userRepository.update(id, {
+      password: hashedPassword,
+    });
   }
 }

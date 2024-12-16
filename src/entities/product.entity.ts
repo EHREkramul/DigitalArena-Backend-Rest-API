@@ -24,13 +24,13 @@ export class Product {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 255 }) // Name/Title of the product.
+  @Column({ type: 'varchar', length: 255, unique: true }) // Name/Title of the product.
   name: string;
 
   @Column({ type: 'text' }) // Detailed description.
   description: string;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
   price: number;
 
   @Column({ type: 'varchar', length: 255, nullable: true }) // Thumbnail Image path.

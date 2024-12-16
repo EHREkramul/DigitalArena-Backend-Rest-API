@@ -5,11 +5,13 @@ import {
   ManyToOne,
   JoinColumn,
   CreateDateColumn,
+  Unique,
 } from 'typeorm';
-import { User } from './user.entity'; // Assuming User entity is in the same directory.
-import { Product } from './product.entity'; // Assuming User entity is in the same directory.
+import { User } from './user.entity';
+import { Product } from './product.entity';
 
 @Entity({ name: 'download_permissions' })
+@Unique(['user', 'product']) // Ensures user-product combination is unique
 export class DownloadPermission {
   @PrimaryGeneratedColumn()
   id: number;

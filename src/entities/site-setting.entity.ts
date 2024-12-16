@@ -1,3 +1,5 @@
+import { SiteSettingKey } from 'src/auth/enums/site-setting-key.enum';
+import { SiteSettingType } from 'src/auth/enums/site-setting-type.enum';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -11,14 +13,14 @@ export class SiteSetting {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 255, unique: true }) // Unique key for the setting (example- "ContactNo", "ContactEmail").
-  key: string;
+  @Column({ type: 'enum', enum: SiteSettingKey, unique: true }) // Unique key for the setting (example- "ContactNo", "ContactEmail").
+  key: SiteSettingKey;
 
   @Column({ type: 'text' }) // Value associated with the setting (e.g., contact email or terms text).
   value: string;
 
-  @Column({ type: 'varchar', length: 50, nullable: true }) // Type of setting (e.g., string, text).
-  type: string;
+  @Column({ type: 'enum', enum: SiteSettingType, nullable: true }) // Type of setting (e.g., string, text).
+  type: SiteSettingType;
 
   @CreateDateColumn()
   createdAt: Date;

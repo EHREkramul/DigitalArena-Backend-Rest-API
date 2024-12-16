@@ -58,4 +58,4 @@ import { ActionLog } from 'src/entities/action-log.entity';
     ActionLogsService,
   ],
 })
-export class AuthModule {}
+export class AuthModule { }

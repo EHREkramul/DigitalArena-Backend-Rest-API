@@ -15,15 +15,25 @@ export class ProductsService {
         @InjectRepository(Category) private readonly categoryRepo: Repository<Category>
     ) { }
 
-    // // <---------- Fetch All Products ---------->
-    // async getAllProducts(): Promise<Product[]> {
-    //     try {
-    //         return await this.productRepo.find();
-    //     } catch (error) {
-    //         console.error('Error fetching products:', error.message); 
-    //         throw new BadRequestException('Error fetching products');
-    //     }
-    // }
+    // <---------- Fetch All Products ---------->
+    async getOneProduct(id: number): Promise<Product> {
+        try {
+            // Fetch the product by ID
+            const product = await this.productRepo.findOne({
+                where: { id }
+            });
+
+            // If the product is not found, throw a NotFoundException
+            if (!product) {
+                throw new NotFoundException(`Product with ID ${id} not found`);
+            }
+
+            return product;
+        } catch (error) {
+            console.error('Error fetching product:', error.message);
+            throw new BadRequestException('Error fetching product');
+        }
+    }
 
     // <---------- Get Trending Products ---------->
     async getTrendingProducts(limit?: number): Promise<Product[]> {
@@ -96,19 +106,26 @@ export class ProductsService {
     async getFilteredProducts(filters: any) {
         const { category, sort, tags, priceMin, priceMax, free } = filters;
 
+        //Starting query
+        let query = this.productRepo.createQueryBuilder('product');
+
         try {
             //Fetching the categoryId from category name
-            const categoryRecord = await this.categoryRepo.findOne({ where: { name: category } });
+            if (category) {
+                const categoryRecord = await this.categoryRepo.findOne({ where: { name: category } });
+                console.log('categoryRecord:', categoryRecord);
 
-            if (!categoryRecord) {
-                throw new NotFoundException('Category not found');
+                if (!categoryRecord) {
+                    throw new NotFoundException('Category not found');
+                }
+
+                // Starting query with category filter
+                query = this.productRepo.createQueryBuilder('product')
+                    .leftJoinAndSelect('product.category', 'category')
+                    .leftJoinAndSelect('product.tags', 'tag')
+                    .where('category.id = :categoryId', { categoryId: categoryRecord.id });
+
             }
-
-            // Starting query with category filter
-            let query = this.productRepo.createQueryBuilder('product')
-                .leftJoinAndSelect('product.category', 'category')
-                .leftJoinAndSelect('product.tags', 'tag')
-                .where('category.id = :categoryId', { categoryId: categoryRecord.id });
 
             // Returning those products which matched with all the tags
             if (tags && tags.length > 0) {

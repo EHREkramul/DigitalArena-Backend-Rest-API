@@ -30,7 +30,7 @@ import { CurrentUser } from 'src/auth/types/current-user';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   /////////////////////////////// GET All Users ///////////////////////////////
   @Roles(Role.ADMIN)

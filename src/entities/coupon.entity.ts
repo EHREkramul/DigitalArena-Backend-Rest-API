@@ -19,10 +19,18 @@ export class Coupon {
   @Column({ type: 'float', nullable: false }) // Discount percentage the coupon provides.
   discountPercentage: number;
 
-  @Column({ type: 'timestamp', nullable: false }) // Start date and time when the coupon becomes valid.
+  @Column({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    nullable: false,
+  }) // Start date and time when the coupon becomes valid.
   validFrom: Date;
 
-  @Column({ type: 'timestamp', nullable: false }) // End date and time when the coupon expires.
+  @Column({
+    type: 'timestamp',
+    default: () => "CURRENT_TIMESTAMP + INTERVAL '7 days'",
+    nullable: false,
+  }) // End date and time when the coupon expires.
   validTo: Date;
 
   @CreateDateColumn() // Timestamp when the coupon was created.

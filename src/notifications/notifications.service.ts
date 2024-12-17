@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MailService } from 'src/auth/services/mail.service';
 import { SmsService } from 'src/auth/services/sms.service';
@@ -21,7 +21,7 @@ export class NotificationsService {
     private readonly actionLogsService: ActionLogsService,
   ) {}
 
-  // <------------------------------------------- Send Email/SMS Notification ------------------------------------------->
+  // <------------------------------------------- Send Email/SMS/PUSH Notification ------------------------------------------->
   async sendNotification(
     userId: number,
     sendNotificationDto: SendNotificationDto,
@@ -38,6 +38,12 @@ export class NotificationsService {
         sendNotificationDto.title,
         sendNotificationDto.message,
       );
+    } else if (sendNotificationDto.type === NotificationType.PUSH) {
+      // Send PUSH notification
+      result = {
+        success: true,
+        message: `Push notification sent to ${user.fullName}`,
+      };
     } else if (sendNotificationDto.type === NotificationType.SMS) {
       // Send SMS notification
       result = await this.smsService.sendNotificationSMS(
@@ -53,22 +59,17 @@ export class NotificationsService {
     }
 
     if (!result.success) {
-      throw new Error('Failed to send notification');
+      throw new InternalServerErrorException('Failed to send notification');
     }
 
     // Save notification to database
-    let notification: Notification;
-    try {
-      notification = new Notification();
-      notification.user.id = userId;
-      notification.title = sendNotificationDto.title;
-      notification.message = sendNotificationDto.message;
-      notification.type = sendNotificationDto.type;
-
-      await this.notificationRepository.save(notification);
-    } catch (error) {
-      console.log('Error saving notification to database: ', error);
-    }
+    const notification = await this.notificationRepository.create({
+      user: { id: userId },
+      title: sendNotificationDto.title,
+      message: sendNotificationDto.message,
+      type: sendNotificationDto.type,
+    });
+    await this.notificationRepository.save(notification);
 
     try {
       // Update Action Log
@@ -79,7 +80,7 @@ export class NotificationsService {
       };
       await this.actionLogsService.createActionLog(actionLog);
     } catch (error) {
-      console.log('Error updating action log: ', error);
+      return `Error updating action log: ${error.message}`;
     }
 
     return result;

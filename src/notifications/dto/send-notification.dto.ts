@@ -16,5 +16,5 @@ export class SendNotificationDto {
 
   @IsOptional()
   @IsEnum(NotificationStatus)
-  status: NotificationStatus;
+  status: NotificationStatus = NotificationStatus.SEND;
 }

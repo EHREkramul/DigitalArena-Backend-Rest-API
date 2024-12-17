@@ -8,6 +8,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from './user.entity';
+import { NotificationStatus } from 'src/auth/enums/notification-status.enum';
+import { NotificationType } from 'src/auth/enums/notification-type.enum';
 
 @Entity({ name: 'notifications' })
 export class Notification {
@@ -20,11 +22,15 @@ export class Notification {
   @Column({ type: 'text' }) // Detailed content of the notification.
   message: string;
 
-  @Column({ type: 'varchar', length: 50 }) // Type of the notification (push, email, sms).
-  type: string;
+  @Column({ type: 'enum', enum: NotificationType }) // Type of the notification (push, email, sms).
+  type: NotificationType;
 
-  @Column({ type: 'varchar', length: 50 }) // Status of the notification (e.g., "unread", "read").
-  status: string;
+  @Column({
+    type: 'enum',
+    enum: NotificationStatus,
+    default: NotificationStatus.SEND,
+  }) // Status of the notification (e.g., "unread", "read").
+  status: NotificationStatus;
 
   @CreateDateColumn()
   createdAt: Date;

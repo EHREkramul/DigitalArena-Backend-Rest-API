@@ -4,6 +4,8 @@ import {
   Query,
   UsePipes,
   ValidationPipe,
+  Param,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
 import { ProductsService } from './products.service';
@@ -11,8 +13,14 @@ import { GetFilteredProductsDto } from './dto/getFilteredProducts.dto';
 
 @Controller('products')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(private readonly productsService: ProductsService) { }
 
+  // <---------- Get a Specific Product ---------->
+  @Public()
+  @Get('getOneProduct/:id')
+  async getOneProduct(@Param('id', ParseIntPipe) id: number) {
+    return await this.productsService.getOneProduct(id);
+  }
   // // <---------- Fetch All Products ---------->
   // @Public()
   // @Get('getAllProducts')

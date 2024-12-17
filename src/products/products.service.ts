@@ -12,17 +12,27 @@ export class ProductsService {
     private readonly productRepo: Repository<Product>,
     @InjectRepository(Category)
     private readonly categoryRepo: Repository<Category>,
-  ) {}
+  ) { }
 
-  // // <---------- Fetch All Products ---------->
-  // async getAllProducts(): Promise<Product[]> {
-  //     try {
-  //         return await this.productRepo.find();
-  //     } catch (error) {
-  //         console.error('Error fetching products:', error.message);
-  //         throw new BadRequestException('Error fetching products');
-  //     }
-  // }
+  // <---------- Fetch All Products ---------->
+  async getOneProduct(id: number): Promise<Product> {
+    try {
+      // Fetch the product by ID
+      const product = await this.productRepo.findOne({
+        where: { id },
+      });
+
+      // If the product is not found, throw a NotFoundException
+      if (!product) {
+        throw new NotFoundException(`Product with ID ${id} not found`);
+      }
+
+      return product;
+    } catch (error) {
+      console.error('Error fetching product:', error.message);
+      throw new BadRequestException('Error fetching product');
+    }
+  }
 
   // <---------- Get Trending Products ---------->
   async getTrendingProducts(limit?: number): Promise<Product[]> {

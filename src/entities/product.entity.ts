@@ -70,7 +70,7 @@ export class Product {
   cartItems?: CartItem[];
 
   @OneToMany(() => Files, (file) => file.product, { cascade: true }) // One product can have many files.
-  files?: File[];
+  files: File[];
 
   @ManyToOne(() => Category, (category) => category.products, {
     nullable: false,
@@ -101,5 +101,5 @@ export class Product {
     joinColumn: { name: 'productId', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'tagId', referencedColumnName: 'id' },
   })
-  tags?: Tag[];
+  tags: Tag[];
 }

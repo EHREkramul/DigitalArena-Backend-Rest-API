@@ -1,4 +1,3 @@
-// mail.service.ts
 import * as nodemailer from 'nodemailer';
 import { Injectable } from '@nestjs/common';
 import emailConfig, { EmailConfig } from '../config/email.config';
@@ -129,5 +128,61 @@ export class MailService {
     };
 
     await this.transporter.sendMail(mailOptions);
+  }
+
+  async sendNotificationEmail(
+    to: string,
+    fullName: string,
+    subject: string,
+    body: string,
+  ) {
+    const mailOptions = {
+      from: 'Digital Arena Notification',
+      to: to,
+      subject: subject,
+      html: `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; background-color: #f9f9f9; padding: 20px; color: #333;">
+  <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+    <!-- Header Section -->
+    <div style="background-color: #007bff; padding: 20px; text-align: center;">
+      <img src="cid:logo" alt="Digital Arena" style="max-width: 120px; margin-bottom: 10px;">
+      <h1 style="color: #ffffff; margin: 0; font-size: 22px;">Notification from Digital Arena</h1>
+    </div>
+    <!-- Body Section -->
+    <div style="padding: 20px;">
+      <p style="font-size: 16px; color: #555;">
+        Hello ${fullName.split(' ')[0]},
+      </p>
+      <p style="font-size: 16px; color: #555;">
+        ${body}
+      </p>
+      <p style="font-size: 14px; color: #777; margin-top: 20px;">
+        If you have any questions or need further assistance, please reply to this email.
+      </p>
+    </div>
+    <!-- Footer Section -->
+    <div style="background-color: #f1f1f1; text-align: center; padding: 10px; border-top: 1px solid #ddd;">
+      <p style="font-size: 12px; color: #777; margin: 0;">
+        © 2024 Digital Arena. All Rights Reserved.
+      </p>
+    </div>
+  </div>
+</div>
+`,
+      attachments: [
+        {
+          filename: 'digital-arena-logo.png',
+          path: './assets/user_profile_image/digital-arena-logo.png',
+          cid: 'logo', // Same CID value as in the HTML content
+        },
+      ],
+    };
+
+    await this.transporter.sendMail(mailOptions);
+
+    return {
+      success: true,
+      message: `Email notification sent to ${to} successfully`,
+    };
   }
 }

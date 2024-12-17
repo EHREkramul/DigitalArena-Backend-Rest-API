@@ -45,4 +45,40 @@ export class SmsService {
       throw new Error('Unable to send SMS at this time');
     }
   }
+
+  async sendNotificationSMS(
+    phoneNumber: string,
+    fullName: string,
+    body: string,
+  ): Promise<any> {
+    const message = `Dear ${fullName.split(' ')[0]},\n${body}\n\nDigital Arena`;
+    const params = {
+      api_key: this.apiKey,
+      senderid: this.senderId,
+      number: phoneNumber,
+      message: message, // URL encode the message
+    };
+
+    try {
+      const response = await axios.post(this.apiUrl, null, { params });
+      //   console.log(response.data); // Check sms status response object.
+      if (response.data.response_code === 202) {
+        this.logger.log('SMS Notification sent successfully');
+        return {
+          success: true,
+          message: `SMS Notification sent successfully to ${fullName}`,
+        };
+      } else {
+        this.logger.error(
+          `Failed to send SMS Notification. Error: ${response.data.error_message}`,
+        );
+        return { success: false, error: response.data.success_message };
+      }
+    } catch (error) {
+      this.logger.error(
+        `Failed to send SMS Notification. Error: ${error.message}`,
+      );
+      throw new Error('Unable to send SMS Notification at this time');
+    }
+  }
 }

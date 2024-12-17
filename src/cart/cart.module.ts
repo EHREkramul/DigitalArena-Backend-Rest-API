@@ -12,4 +12,4 @@ import { User } from 'src/entities/user.entity';
   controllers: [CartController],
   providers: [CartService],
 })
-export class CartModule { }
+export class CartModule {}

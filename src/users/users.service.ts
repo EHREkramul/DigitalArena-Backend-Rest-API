@@ -26,7 +26,7 @@ export class UsersService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private mailService: MailService,
-  ) { }
+  ) {}
 
   ////////////////////////////////////// API METHODS //////////////////////////////////////
 

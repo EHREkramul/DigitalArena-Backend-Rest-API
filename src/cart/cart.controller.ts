@@ -9,9 +9,7 @@ export class CartController {
     // <----------------------- Get All Cart Items for a User ----------------------->
     @Public()
     @Get('getCartItems/:userId')
-    async getCartItemsByUserId(
-        @Param('userId') userId: number,
-    ) {
+    async getCartItemsByUserId(@Param('userId') userId: number) {
         return this.cartService.getCartItemsByUserId(userId);
     }
 
@@ -28,18 +26,14 @@ export class CartController {
     // <----------------------- Remove Product from Cart ----------------------->
     @Public()
     @Post('remove/:cartItemId')
-    async removeCartItem(
-        @Param('cartItemId') cartItemId: number,
-    ) {
+    async removeCartItem(@Param('cartItemId') cartItemId: number) {
         return this.cartService.removeCartItem(cartItemId);
     }
 
     // <----------------------- Clear Cart of a User ----------------------->
     @Public()
     @Post('clearCartItems/:userId')
-    async deleteCartAndItemsByUserId(
-        @Param('userId') userId: number,
-    ) {
+    async deleteCartAndItemsByUserId(@Param('userId') userId: number) {
         return this.cartService.deleteCartAndItemsByUserId(userId);
     }
 }

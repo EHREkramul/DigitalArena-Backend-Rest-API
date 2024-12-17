@@ -1,4 +1,12 @@
-import { Controller, Get, Query, UsePipes, ValidationPipe, Param, ParseIntPipe } from '@nestjs/common';
+import {
+    Controller,
+    Get,
+    Query,
+    UsePipes,
+    ValidationPipe,
+    Param,
+    ParseIntPipe,
+} from '@nestjs/common';
 import { Public } from 'src/auth/decorators/public.decorator';
 import { ProductsService } from './products.service';
 import { GetFilteredProductsDto } from './dto/getFilteredProducts.dto';
@@ -32,9 +40,7 @@ export class ProductsController {
     @Public()
     @Get('getFilteredProducts')
     @UsePipes(new ValidationPipe({ transform: true }))
-    getFilteredProducts(
-        @Query() filters: GetFilteredProductsDto
-    ) {
+    getFilteredProducts(@Query() filters: GetFilteredProductsDto) {
         return this.productsService.getFilteredProducts(filters);
     }
 }

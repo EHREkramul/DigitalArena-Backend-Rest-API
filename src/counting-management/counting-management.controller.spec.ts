@@ -9,7 +9,9 @@ describe('CountingManagementController', () => {
       controllers: [CountingManagementController],
     }).compile();
 
-    controller = module.get<CountingManagementController>(CountingManagementController);
+    controller = module.get<CountingManagementController>(
+      CountingManagementController,
+    );
   });
 
   it('should be defined', () => {

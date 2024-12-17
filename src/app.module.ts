@@ -30,11 +30,11 @@ import { Files } from './entities/files.entity';
 import { ConfigModule } from '@nestjs/config';
 import { Verification } from './entities/verification.entity';
 import { WishlistItemsModule } from './wishlist-items/wishlist-items.module';
-import { DowloadPermissionsModule } from './dowload-permissions/dowload-permissions.module';
 import { ActionLogsModule } from './action-logs/action-logs.module';
 import { CountingManagementModule } from './counting-management/counting-management.module';
 import { AdminStatisticsModule } from './admin-statistics/admin-statistics.module';
 import { WalletsModule } from './wallets/wallets.module';
+import { DownloadPermissionsModule } from './download-permissions/download-permissions.module';
 import dbConfig from './config/db.config';
 import smsConfig from './auth/config/sms.config';
 
@@ -77,11 +77,11 @@ import smsConfig from './auth/config/sms.config';
     CategoriesModule,
     CouponsModule,
     WishlistItemsModule,
-    DowloadPermissionsModule,
     ActionLogsModule,
     CountingManagementModule,
     AdminStatisticsModule,
     WalletsModule,
+    DownloadPermissionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

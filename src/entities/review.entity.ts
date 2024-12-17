@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 import { Product } from './product.entity';
-import { ReviewStatus } from 'src/auth/enums/reviewStatus.enum';
+import { ReviewStatus } from 'src/auth/enums/review-status.enum';
 
 @Entity({ name: 'reviews' })
 export class Review {
@@ -32,11 +32,17 @@ export class Review {
   reviewStatus: ReviewStatus;
 
   ////////// RELATIONSHIPS //////////
-  @ManyToOne(() => User, (user) => user.reviews, { nullable: false }) // Many reviews can belong to one user.
+  @ManyToOne(() => User, (user) => user.reviews, {
+    nullable: true,
+    onDelete: 'SET NULL', // Set null on delete
+  }) // Many reviews can belong to one user.
   @JoinColumn()
   user: User;
 
-  @ManyToOne(() => Product, (product) => product.reviews, { nullable: false }) // Many reviews can belong to one product.
+  @ManyToOne(() => Product, (product) => product.reviews, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  }) // Many reviews can belong to one product.
   @JoinColumn()
   product: Product;
 }

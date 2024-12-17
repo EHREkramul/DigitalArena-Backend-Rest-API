@@ -34,6 +34,7 @@ import { DowloadPermissionsModule } from './dowload-permissions/dowload-permissi
 import { ActionLogsModule } from './action-logs/action-logs.module';
 import { CountingManagementModule } from './counting-management/counting-management.module';
 import { AdminStatisticsModule } from './admin-statistics/admin-statistics.module';
+import { WalletsModule } from './wallets/wallets.module';
 import dbConfig from './config/db.config';
 import smsConfig from './auth/config/sms.config';
 
@@ -80,8 +81,9 @@ import smsConfig from './auth/config/sms.config';
     ActionLogsModule,
     CountingManagementModule,
     AdminStatisticsModule,
+    WalletsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

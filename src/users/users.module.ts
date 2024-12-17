@@ -21,5 +21,6 @@ import { ActionLogsService } from 'src/action-logs/action-logs.service';
       useClass: EntityPropertyNotFoundExceptionFilter,
     },
   ],
+  exports: [UsersService],
 })
 export class UsersModule {}

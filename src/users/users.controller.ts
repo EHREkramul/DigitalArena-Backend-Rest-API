@@ -27,6 +27,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { extname } from 'path';
 import { CurrentUser } from 'src/auth/types/current-user';
+import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 
 @Controller('users')
 export class UsersController {
@@ -60,15 +61,29 @@ export class UsersController {
 
   /////////////////////////////// Update an User Information ///////////////////////////////
   @Patch('updateUser')
-  updateUser(@Req() req, @Body(ValidationPipe) updateUserDto: UpdateUserDto) {
+  updateUser(
+    @Req() req: any,
+    @Body(ValidationPipe) updateUserDto: UpdateUserDto,
+  ) {
     return this.usersService.updateUser(req.user.id, updateUserDto);
+  }
+
+  /////////////////////////////// Update an User Role ///////////////////////////////
+  @Roles(Role.ADMIN)
+  @Patch('updateUserRole/:id')
+  updateUserRole(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(ValidationPipe) updateUserRoleDto: UpdateUserRoleDto,
+    @Req() req: any,
+  ) {
+    return this.usersService.updateUserRole(id, updateUserRoleDto, req.user.id);
   }
 
   /////////////////////////////// Delete an User ///////////////////////////////
   @Roles(Role.ADMIN)
   @Delete('deleteUser/:id')
-  deleteUser(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.deleteUser(id);
+  deleteUser(@Param('id', ParseIntPipe) id: number, @Req() req: any) {
+    return this.usersService.deleteUser(id, req.user.id);
   }
 
   /////////////////////////////// Update User Profile Image ///////////////////////////////
@@ -132,6 +147,13 @@ export class UsersController {
       req.user.id,
       profileImage.filename,
     );
+  }
+
+  /////////////////////////////// Get User by ID ///////////////////////////////
+  @Roles(Role.ADMIN)
+  @Get('getUserById/:id')
+  getUserById(@Param('id', ParseIntPipe) id: number) {
+    return this.usersService.getUserById(id);
   }
 
   /////////////////////////////// Insert Bulk Users(Temp-Only in Dev Mode) ///////////////////////////////

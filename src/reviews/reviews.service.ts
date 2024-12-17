@@ -11,7 +11,7 @@ import { CreateReviewDto } from './dto/review.dto';
 import { Review } from '../entities/review.entity';
 import { User } from 'src/entities/user.entity';
 import { Product } from 'src/entities/product.entity';
-import { ReviewStatus } from 'src/auth/enums/reviewStatus.enum';
+import { ReviewStatus } from 'src/auth/enums/review-status.enum';
 
 @Injectable()
 export class ReviewsService {
@@ -24,7 +24,7 @@ export class ReviewsService {
 
     @InjectRepository(Product)
     private productsRepository: Repository<Product>,
-  ) {}
+  ) { }
 
   // <----------------------- Add a Review ----------------------->
   async addReview(createReviewDto: CreateReviewDto): Promise<Review> {

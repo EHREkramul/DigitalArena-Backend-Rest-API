@@ -18,6 +18,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { ActionLogsService } from 'src/action-logs/action-logs.service';
 import { ActionType } from 'src/auth/enums/action-type.enum';
+import { UpdateUserRoleDto } from './dto/update-user-role.dto';
+import { deleteTempDirectory } from 'src/auth/utility/delete-directory.util';
 
 @Injectable()
 export class UsersService {
@@ -42,7 +44,6 @@ export class UsersService {
         'role',
         'isActive',
         'profileImage',
-        'balance',
         'createdAt',
         'updatedAt',
         'lastLoginAt',
@@ -68,7 +69,6 @@ export class UsersService {
         'role',
         'isActive',
         'profileImage',
-        'balance',
         'createdAt',
         'updatedAt',
         'lastLoginAt',
@@ -183,8 +183,43 @@ export class UsersService {
     return result;
   }
 
+  // <----------------------- Update an User Role ----------------------->
+  async updateUserRole(
+    id: number,
+    updateUserRoleDto: UpdateUserRoleDto,
+    adminId: number,
+  ) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    // Check if the user exists or not with id.
+    if (!user) {
+      throw new NotFoundException(`User with id ${id} not found`);
+    }
+
+    // Check if id is not ADMIN.
+    if (user.role === 'ADMIN') {
+      throw new UnauthorizedException(`Unauthorized to update this User`);
+    }
+
+    const result = await this.userRepository.update(id, {
+      role: updateUserRoleDto.role,
+    });
+
+    // Update Action Log
+    const actionLog = {
+      action: ActionType.ADMIN_UPDATE_USER_ROLE,
+      description: `Admin updated User Role for User with id: ${id} to ${updateUserRoleDto.role}`,
+      user: await this.userRepository.findOne({ where: { id: adminId } }),
+    };
+    await this.actionLogsService.createActionLog(actionLog);
+
+    return {
+      message: `User Role Updated Successfully`,
+      userAffected: result.affected,
+    };
+  }
+
   // <----------------------- Delete an User ----------------------->
-  async deleteUser(id: number) {
+  async deleteUser(id: number, adminId: number) {
     const user = await this.userRepository.findOne({ where: { id } });
     // Check if the user exists or not with id.
     if (!user) {
@@ -198,15 +233,27 @@ export class UsersService {
 
     const result = await this.userRepository.delete(id);
 
+    // Clear user profile image directory
+    if (result.affected) {
+      // Check if the user has the direcotry
+      const userProfileDirectory = `./assets/user_profile_image/user_${id}`;
+      if (fs.existsSync(userProfileDirectory)) {
+        deleteTempDirectory(userProfileDirectory);
+      }
+    }
+
     // Update Action Log
     const actionLog = {
       action: ActionType.ADMIN_DELETE_USER,
-      description: 'Admin deleted an User',
-      user: user,
+      description: `Admin deleted an User with id: ${id}`,
+      user: await this.userRepository.findOne({ where: { id: adminId } }),
     };
     await this.actionLogsService.createActionLog(actionLog);
 
-    return result;
+    return {
+      message: `User Deleted Successfully`,
+      userAffected: result.affected,
+    };
   }
 
   // <----------------------- Update User Profile Image ----------------------->
@@ -222,7 +269,6 @@ export class UsersService {
     });
 
     const uploadPath = path.join(
-      __dirname,
       '..',
       '..',
       'assets',
@@ -286,7 +332,7 @@ export class UsersService {
     }
 
     // Stream the image file to the client
-    res.sendFile(imagePath, (err) => {
+    res.sendFile(imagePath, (err: any) => {
       if (err) {
         throw new HttpException(
           'Unable to retrieve the profile image',
@@ -304,6 +350,32 @@ export class UsersService {
     const users = this.userRepository.create(createUserDto);
     await this.userRepository.save(users);
     return users;
+  }
+
+  // <..................... Get User By Id .....................>
+  async getUserById(id: number) {
+    // Check if the user exists or not with id.
+    const user = await this.userRepository.findOne({
+      where: { id },
+      select: [
+        'id',
+        'username',
+        'email',
+        'fullName',
+        'phone',
+        'role',
+        'isActive',
+        'profileImage',
+        'createdAt',
+        'updatedAt',
+        'lastLoginAt',
+      ],
+    });
+    if (!user) {
+      throw new NotFoundException(`User with id ${id} not found`);
+    }
+
+    return user;
   }
 
   //////////////////////////////////////// HELPER METHODS ////////////////////////////////////////

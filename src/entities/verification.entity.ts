@@ -29,6 +29,9 @@ export class Verification {
   userId: number;
 
   ////////// RELATIONSHIPS //////////
-  @ManyToOne(() => User, (user) => user.verifications) // Many verifications belong to one user
+  @ManyToOne(() => User, (user) => user.verifications, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  }) // Many verifications belong to one user
   user: User;
 }

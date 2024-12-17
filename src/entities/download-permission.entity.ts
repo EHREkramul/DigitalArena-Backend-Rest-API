@@ -28,13 +28,15 @@ export class DownloadPermission {
 
   ////////// RELATIONSHIPS //////////
   @ManyToOne(() => User, (user) => user.downloadPermissions, {
-    nullable: false,
+    nullable: true,
+    onDelete: 'SET NULL', // Set null on delete
   }) // Many files can be downloaded by one user.
   @JoinColumn()
   user: User;
 
   @ManyToOne(() => Product, (product) => product.downloadPermissions, {
-    nullable: false,
+    nullable: true,
+    onDelete: 'SET NULL', // Set null on delete
   }) // Many download permissions can be linked to one product.
   @JoinColumn()
   product: Product;

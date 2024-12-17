@@ -25,11 +25,17 @@ export class OrderItem {
   updatedAt: Date;
 
   ////////// RELATIONSHIPS //////////
-  @ManyToOne(() => Order, (order) => order.orderItems, { nullable: false }) // Many items belong to one order.
+  @ManyToOne(() => Order, (order) => order.orderItems, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  }) // Many items belong to one order.
   @JoinColumn()
   order: Order;
 
-  @ManyToOne(() => Product, (product) => product.id, { nullable: false }) // Many items can have one product.
+  @ManyToOne(() => Product, (product) => product.orderItems, {
+    nullable: true,
+    onDelete: 'SET NULL', // Set null on delete
+  }) // Many items can have one product.
   @JoinColumn()
   product: Product;
 }

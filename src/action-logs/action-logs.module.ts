@@ -8,5 +8,6 @@ import { ActionLog } from 'src/entities/action-log.entity';
   imports: [TypeOrmModule.forFeature([ActionLog])], // Add Action Log to use repository in service.
   controllers: [ActionLogsController],
   providers: [ActionLogsService],
+  exports: [ActionLogsService],
 })
 export class ActionLogsModule {}

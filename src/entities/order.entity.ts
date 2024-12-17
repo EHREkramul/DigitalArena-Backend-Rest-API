@@ -38,7 +38,10 @@ export class Order {
   updatedAt: Date;
 
   ////////// RELATIONSHIPS //////////
-  @ManyToOne(() => User, (user) => user.orders, { nullable: false }) // Many orders belong to one user.
+  @ManyToOne(() => User, (user) => user.orders, {
+    nullable: true,
+    onDelete: 'SET NULL', // Set null on delete
+  }) // Many orders belong to one user.
   @JoinColumn()
   user: User;
 

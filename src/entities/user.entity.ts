@@ -19,6 +19,7 @@ import { ActionLog } from './action-log.entity';
 import { Coupon } from './coupon.entity';
 import { DownloadPermission } from './download-permission.entity';
 import { Review } from './review.entity';
+import { Wallet } from './wallet.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -56,9 +57,6 @@ export class User {
 
   @Column({ type: 'varchar', length: 255, nullable: true }) // Full name of the user.
   fullName?: string;
-
-  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 }) // Precision for total digits and scale for decimal places
-  balance: number;
 
   @CreateDateColumn() // Timestamp when the user was created.
   createdAt: Date;
@@ -107,7 +105,10 @@ export class User {
   @OneToMany(() => Review, (review) => review.user, { cascade: true }) // One user can have many reviews.
   reviews: Review[];
 
-  ////////// Before inserting a new user, the email, username, and full name are normalized.
+  @OneToOne(() => Wallet, (wallet) => wallet.user, { cascade: true }) // One user has one wallet.
+  wallet: Wallet;
+
+  //////////////////////////////////// Before inserting a new user, the email, username, and full name are normalized.
   @BeforeInsert()
   emailToLowerCase() {
     this.email = this.email.toLowerCase();

@@ -29,9 +29,9 @@ assets/graphics_template/*
 !assets/graphics_template/subcat-graphics-template-logo.jpg
 
 # Ignore everything in homepage_carousel except selected files
-assets/homepage_carousel/*
-!assets/homepage_carousel/
-!assets/homepage_carousel/README.md
+assets/carousel_images/*
+!assets/carousel_images/
+!assets/carousel_images/README.md
 
 # Ignore everything in presentation_slide except selected files
 assets/presentation_slide/*

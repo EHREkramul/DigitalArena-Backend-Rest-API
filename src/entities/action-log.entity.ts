@@ -24,7 +24,10 @@ export class ActionLog {
   createdAt: Date;
 
   ////////// RELATIONSHIPS //////////
-  @ManyToOne(() => User, (user) => user.logs, { nullable: true }) // Many logs belong to one user.
+  @ManyToOne(() => User, (user) => user.logs, {
+    nullable: true,
+    onDelete: 'SET NULL', // Set null on delete
+  }) // Many logs belong to one user.
   @JoinColumn()
   user: User;
 }

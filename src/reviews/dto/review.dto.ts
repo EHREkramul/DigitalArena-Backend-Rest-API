@@ -1,6 +1,6 @@
 // create-review.dto.ts
 import { IsInt, IsOptional, IsString, IsEnum, Min, Max } from 'class-validator';
-import { ReviewStatus } from 'src/auth/enums/reviewStatus.enum';
+import { ReviewStatus } from 'src/auth/enums/review-status.enum';
 
 export class CreateReviewDto {
   @IsInt()

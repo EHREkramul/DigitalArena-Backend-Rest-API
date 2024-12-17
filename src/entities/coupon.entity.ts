@@ -38,7 +38,10 @@ export class Coupon {
   userSpecific: boolean;
 
   ////////// RELATIONSHIPS //////////
-  @ManyToOne(() => User, { nullable: true }) // Many coupons can belong to one user.
+  @ManyToOne(() => User, {
+    nullable: true,
+    onDelete: 'SET NULL', // Set null on delete
+  }) // Many coupons can belong to one user.
   @JoinColumn() // Foreign key referencing users(id) if the coupon is user-specific.
   user: User | null;
 }

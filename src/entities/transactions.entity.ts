@@ -7,8 +7,8 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 import { Wallet } from './wallet.entity'; // Import the Wallet entity
-import { Status } from 'src/auth/enums/status.enum';
 import { TransactionType } from 'src/auth/enums/transaction-type.enum';
+import { TransactionStatus } from 'src/auth/enums/transaction-status.enum';
 
 @Entity('transactions')
 export class Transactions {
@@ -26,10 +26,10 @@ export class Transactions {
 
   @Column({
     type: 'enum',
-    enum: Status,
-    default: Status.PENDING,
+    enum: TransactionStatus,
+    default: TransactionStatus.PENDING,
   })
-  status: Status; // Status of the transaction
+  status: TransactionStatus; // Status of the transaction
 
   @Column({ nullable: true })
   reference: string; // Payment notes from the user

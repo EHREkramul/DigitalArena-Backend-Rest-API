@@ -16,7 +16,7 @@ import * as bcrypt from 'bcrypt';
 import { DepositWalletDto } from './dto/deposit-wallet.dto';
 import { GiftCard } from 'src/entities/gift-card.entity';
 import { TransactionType } from 'src/auth/enums/transaction-type.enum';
-import { Status } from 'src/auth/enums/status.enum';
+import { TransactionStatus } from 'src/auth/enums/transaction-status.enum';
 
 @Injectable()
 export class WalletsService {
@@ -156,7 +156,7 @@ export class WalletsService {
     const transaction = new Transactions();
     transaction.type = TransactionType.CREDIT;
     transaction.amount = giftCard.amount;
-    transaction.status = Status.APPROVED;
+    transaction.status = TransactionStatus.SUCCESSFUL;
     transaction.reference = `Deposited ${giftCard.amount} BDT from gift card.`;
     transaction.wallet = wallet;
 

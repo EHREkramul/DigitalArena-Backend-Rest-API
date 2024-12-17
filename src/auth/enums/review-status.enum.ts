@@ -1,4 +1,4 @@
-export enum Status {
+export enum ReviewStatus {
   PENDING = 'PENDING',
   APPROVED = 'APPROVED',
   REJECTED = 'REJECTED',

@@ -1,10 +1,14 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   HttpStatus,
+  Param,
+  ParseIntPipe,
   Post,
+  Res,
   UploadedFiles,
   UseInterceptors,
   ValidationPipe,
@@ -41,9 +45,8 @@ export class SiteSettingsController {
     );
   }
 
-  // <--------------------------------------------- Add Carousel Image --------------------------------------------->
-  // @Roles(Role.ADMIN)
-  @Public()
+  // <--------------------------------------------- Add Single/Multiple Carousel Image --------------------------------------------->
+  @Roles(Role.ADMIN)
   @Post('addCarouselImage')
   @UseInterceptors(
     FilesInterceptor('files', 15, {
@@ -104,7 +107,37 @@ export class SiteSettingsController {
     );
   }
 
-  // <--------------------------------------------- Get Carousel Images --------------------------------------------->
-  // <--------------------------------------------- Delete Carousel Images --------------------------------------------->
-  // <--------------------------------------------- Delete Single Carousel Image --------------------------------------------->
+  // <--------------------------------------------- Get Page Wise Carousel Images --------------------------------------------->
+  @Public()
+  @Get('getPagecarouselImages/:page')
+  async getPageCarouselImages(
+    @Param('page') page: string,
+    @Res() res: Request,
+  ) {
+    return await this.siteSettingsService.getPageCarouselImages(page, res);
+  }
+
+  // <--------------------------------------------- Get ID Wise Single Carousel Images --------------------------------------------->
+  @Public()
+  @Get('getCarouselImage/:id')
+  async getCarouselImage(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: any,
+  ) {
+    return await this.siteSettingsService.getCarouselImage(id, res);
+  }
+
+  // <--------------------------------------------- Delete Carousel Full Page --------------------------------------------->
+  @Roles(Role.ADMIN)
+  @Delete('deleteCarouselPage/:page')
+  async deleteCarouselPage(@Param('page') page: string) {
+    return await this.siteSettingsService.deleteCarouselPage(page);
+  }
+
+  // <--------------------------------------------- Delete Single Carousel Image By ID --------------------------------------------->
+  @Roles(Role.ADMIN)
+  @Delete('deleteCarouselImage/:id')
+  async deleteCarouselImage(@Param('id', ParseIntPipe) id: number) {
+    return await this.siteSettingsService.deleteCarouselImage(id);
+  }
 }

@@ -11,4 +11,4 @@ import { Category } from 'src/entities/category.entity';
   controllers: [AdminStatisticsController],
   providers: [AdminStatisticsService],
 })
-export class AdminStatisticsModule { }
+export class AdminStatisticsModule {}

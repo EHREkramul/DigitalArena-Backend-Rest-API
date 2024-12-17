@@ -24,7 +24,7 @@ export class ReviewsService {
 
     @InjectRepository(Product)
     private productsRepository: Repository<Product>,
-  ) { }
+  ) {}
 
   // <----------------------- Add a Review ----------------------->
   async addReview(createReviewDto: CreateReviewDto): Promise<Review> {

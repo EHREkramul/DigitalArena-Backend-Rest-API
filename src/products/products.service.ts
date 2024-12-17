@@ -12,7 +12,7 @@ export class ProductsService {
     private readonly productRepo: Repository<Product>,
     @InjectRepository(Category)
     private readonly categoryRepo: Repository<Category>,
-  ) { }
+  ) {}
 
   // <---------- Fetch All Products ---------->
   async getOneProduct(id: number): Promise<Product> {

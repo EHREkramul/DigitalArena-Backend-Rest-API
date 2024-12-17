@@ -17,7 +17,7 @@ import { ReviewStatus } from 'src/auth/enums/review-status.enum';
 
 @Controller('reviews')
 export class ReviewsController {
-  constructor(private readonly reviewsService: ReviewsService) { }
+  constructor(private readonly reviewsService: ReviewsService) {}
 
   // <----------------------- Get Reviews by Status ----------------------->
   @Public()

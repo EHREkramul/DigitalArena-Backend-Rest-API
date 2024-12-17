@@ -1,9 +1,18 @@
-import { Body, Controller, Get, Post, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Req,
+  ValidationPipe,
+} from '@nestjs/common';
 import { CouponsService } from './coupons.service';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/auth/enums/role.enum';
-import { Public } from 'src/auth/decorators/public.decorator';
 import { CreateCouponDto } from './dto/create-coupon.dto';
+import { UpdateCouponDto } from './dto/update-coupon.dto';
 
 @Controller('coupons')
 export class CouponsController {
@@ -22,8 +31,31 @@ export class CouponsController {
   async getAllCoupons() {
     return await this.couponsService.getAllCoupons();
   }
-  // <------------------------------------ Get Coupon by id ------------------------------------>
+
+  // <------------------------------------ Get Coupon by Coupon Code ------------------------------------>
+  @Get('getCouponByCode/:couponCode')
+  async getCouponByCode(@Param('couponCode') couponCode: string) {
+    return await this.couponsService.getCouponByCode(couponCode);
+  }
+
   // <------------------------------------ Update Coupon ------------------------------------>
+  @Roles(Role.ADMIN)
+  @Post('updateCoupon')
+  async updateCoupon(@Body(ValidationPipe) updateCouponDto: UpdateCouponDto) {
+    return await this.couponsService.updateCoupon(updateCouponDto);
+  }
+
   // <------------------------------------ Delete Coupon ------------------------------------>
-  // <------------------------------------ Get Coupon for single user ------------------------------------>
+  @Roles(Role.ADMIN)
+  @Delete('deleteCoupon/:couponCode')
+  async deleteCoupon(@Param('couponCode') couponCode: string) {
+    return await this.couponsService.deleteCoupon(couponCode);
+  }
+
+  // <------------------------------------ Get All Coupon for single user ------------------------------------>
+  @Roles(Role.BUYER)
+  @Get('getAllCouponsForUser')
+  async getAllCouponsForUser(@Req() req: any) {
+    return await this.couponsService.getAllCouponsForUser(req.user.id);
+  }
 }

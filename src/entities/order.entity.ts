@@ -10,26 +10,33 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 import { OrderItem } from './order-item.entity';
+import { OrderStatus } from 'src/auth/enums/order-status.enum';
+import { PaymentStatus } from 'src/auth/enums/payment-status.enum';
+import { PaymentMethod } from 'src/auth/enums/payment-method.enum';
 
 @Entity({ name: 'orders' })
 export class Order {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 50, nullable: false }) // Order status (Pending, Success, Failed).
-  status: string;
+  @Column({ type: 'enum', enum: OrderStatus, default: OrderStatus.PENDING }) // Order status (Pending, Success, Failed).
+  status: OrderStatus;
 
   @Column({ type: 'numeric', precision: 10, scale: 2, nullable: false }) // Total price with precision.
   totalPrice: number;
 
-  @Column({ type: 'varchar', length: 50, nullable: false }) // Payment status (Pending, Success, Failed).
-  paymentStatus: string;
+  @Column({ type: 'enum', enum: PaymentStatus, default: PaymentStatus.PENDING }) // Payment status (Pending, Success, Failed).
+  paymentStatus: PaymentStatus;
 
   @Column({ type: 'text', nullable: true }) // Billing address.
   billingAddress: string;
 
-  @Column({ type: 'varchar', length: 50, nullable: false }) // Payment method.
-  paymentMethod: string;
+  @Column({
+    type: 'enum',
+    enum: PaymentMethod,
+    default: PaymentMethod.UNDEFINED,
+  }) // Payment method.
+  paymentMethod: PaymentMethod;
 
   @CreateDateColumn()
   createdAt: Date;

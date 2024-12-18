@@ -213,4 +213,36 @@ export class WalletsService {
 
     return transactions;
   }
+
+  // Update wallet balance
+  async updateWalletBalance(userId: number, newBalance: number) {
+    const user = await this.usersService.getUserById(userId);
+    const wallet = await this.walletRepository.findOne({
+      where: { user: { id: user.id } },
+    });
+
+    if (!wallet) {
+      throw new NotFoundException('Wallet does not exist for this user.');
+    }
+
+    await this.walletRepository.update(
+      { id: wallet.id },
+      { balance: newBalance },
+    );
+  }
+
+  // Create transaction record
+  async createTransaction(transaction: Transactions) {
+    await this.transactionsRepository.save(transaction);
+  }
+
+  // Get wallet by ID
+  async getWalletById(userId: number) {
+    const user = await this.usersService.getUserById(userId);
+
+    const wallet = await this.walletRepository.findOne({
+      where: { user: { id: user.id } },
+    });
+    return wallet;
+  }
 }

@@ -14,5 +14,6 @@ import { GiftCard } from 'src/entities/gift-card.entity';
   ],
   controllers: [WalletsController],
   providers: [WalletsService],
+  exports: [WalletsService],
 })
 export class WalletsModule {}

@@ -9,6 +9,8 @@ import { Repository } from 'typeorm';
 import { CreateCouponDto } from './dto/create-coupon.dto';
 import { UsersService } from 'src/users/users.service';
 import { UpdateCouponDto } from './dto/update-coupon.dto';
+import { ActionType } from 'src/auth/enums/action-type.enum';
+import { ActionLogsService } from 'src/action-logs/action-logs.service';
 
 @Injectable()
 export class CouponsService {
@@ -16,6 +18,7 @@ export class CouponsService {
     @InjectRepository(Coupon)
     private couponRepository: Repository<Coupon>,
     private usersService: UsersService,
+    private actionLogsService: ActionLogsService,
   ) {}
 
   // <------------------------------------ Create Coupon ------------------------------------>
@@ -70,6 +73,14 @@ export class CouponsService {
       ...filteredCreateCouponDto,
       user: user,
     });
+
+    // Update Action Log
+    const actionLog = {
+      action: ActionType.COUPON_CREATE,
+      description: `User with ID ${userId} created an order`,
+      user: user,
+    };
+    await this.actionLogsService.createActionLog(actionLog);
     return await this.couponRepository.save(coupon);
   }
 
@@ -171,6 +182,14 @@ export class CouponsService {
       },
     );
 
+    // Update Action Log
+    const actionLog = {
+      action: ActionType.COUPON_UPDATE,
+      description: `User with ID ${userId} updated a coupon`,
+      user: user,
+    };
+    await this.actionLogsService.createActionLog(actionLog);
+
     return {
       message: 'Coupon updated successfully',
       afffedtedCoupons: result.affected,
@@ -183,6 +202,15 @@ export class CouponsService {
     if (result.affected === 0) {
       throw new NotFoundException('Coupon not found');
     }
+
+    // Update Action Log
+    const actionLog = {
+      action: ActionType.COUPON_DELETE,
+      description: `Admin deleted a coupon with code ${couponCode}`,
+      user: null,
+    };
+    await this.actionLogsService.createActionLog(actionLog);
+
     return { message: 'Coupon deleted successfully' };
   }
 
@@ -192,5 +220,56 @@ export class CouponsService {
       where: { user: { id: userId } },
       order: { createdAt: 'DESC' },
     });
+  }
+
+  // <------------------------------------ Validate Coupon ------------------------------------>
+  async validateCouponForUser(couponCode: string, userId: number) {
+    const coupon = await this.couponRepository.findOne({
+      where: { couponCode },
+      relations: ['user'],
+    });
+
+    if (!coupon) {
+      throw new BadRequestException('Coupon not found');
+    }
+
+    // Check if the coupon is user-specific and if the user ID is the same.
+    if (coupon.userSpecific && coupon.user.id !== userId) {
+      throw new BadRequestException('Coupon is not valid for this user');
+    }
+
+    // Check if the coupon is expired.
+    if (coupon.validTo < new Date()) {
+      throw new BadRequestException('Coupon has expired');
+    }
+
+    // Check if the coupon is not yet valid.
+    if (coupon.validFrom > new Date()) {
+      throw new BadRequestException('Coupon is not yet valid');
+    }
+
+    // Check if the coupon has been used up.
+    if (coupon.maxUsage && coupon.usageCount >= coupon.maxUsage) {
+      throw new BadRequestException('Coupon has been used up');
+    }
+
+    return coupon;
+  }
+
+  // <------------------------------------ Use Coupon ------------------------------------>
+  async increaseCouponUsageCount(couponId: number) {
+    // Update Action Log
+    const actionLog = {
+      action: ActionType.COUPON_REDEEM,
+      description: `Coupon with ID ${couponId} was redeemed`,
+      user: null,
+    };
+    await this.actionLogsService.createActionLog(actionLog);
+
+    return await this.couponRepository.increment(
+      { id: couponId },
+      'usageCount',
+      1,
+    );
   }
 }
